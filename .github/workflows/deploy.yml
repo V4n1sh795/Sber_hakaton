@@ -53,6 +53,7 @@ jobs:
 
       - name: Start Django app with Gunicorn
         run: |
+          systemctl daemon-reload
           cd "$PROJECT_ROOT"
           source venv/bin/activate
           sudo systemctl restart myproject
