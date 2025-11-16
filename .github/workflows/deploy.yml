@@ -26,7 +26,7 @@ jobs:
         run: |
           rsync -av --delete \
             --exclude='.git' \
-            --exclude='venv' \
+            --exclude='.venv' \
             --exclude='*.env' \
             --exclude='media/' \
             --exclude='staticfiles/' \
@@ -35,14 +35,14 @@ jobs:
       - name: Install/Update Python dependencies
         run: |
           cd "$PROJECT_ROOT"
-          python -m venv venv
-          source venv/bin/activate
+          python -m venv .venv
+          source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
       - name: Migrations
         run: |
           cd "$PROJECT_ROOT"
-          source venv/bin/activate
+          source .venv/bin/activate
           python manage.py migrate --noinput
 
       # - name: Collect static files
@@ -55,5 +55,5 @@ jobs:
         run: |
           systemctl --user daemon-reload
           cd "$PROJECT_ROOT"
-          source venv/bin/activate
+          source .venv/bin/activate
           systemctl --user restart myproject
