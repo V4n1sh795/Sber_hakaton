@@ -1,0 +1,95 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      PROJECT_ROOT: /opt/myproject
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Stop running Django app (if any)
+        run: |
+          PID_FILE="$PROJECT_ROOT/gunicorn.pid"
+          if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+              echo "Stopping Gunicorn (PID: $PID)..."
+              kill "$PID"
+              sleep 3
+            fi
+            rm -f "$PID_FILE"
+          else
+            echo "No PID file found. Trying to kill by command name..."
+            pkill -f "gunicorn.*myproject.wsgi" || true
+          fi
+
+      - name: Sync code
+        run: |
+          sudo rsync -av --delete \
+            --exclude='.git' \
+            --exclude='venv' \
+            --exclude='*.env' \
+            --exclude='media/' \
+            --exclude='staticfiles/' \
+            ./ "$PROJECT_ROOT/"
+
+      - name: Install/Update Python dependencies
+        run: |
+          cd "$PROJECT_ROOT"
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run migrations
+        run: |
+          cd "$PROJECT_ROOT"
+          source venv/bin/activate
+          python manage.py migrate --noinput
+
+      - name: Collect static files
+        run: |
+          cd "$PROJECT_ROOT"
+          source venv/bin/activate
+          python manage.py collectstatic --noinput
+
+      - name: Start Django app
+        run: |
+          cd "$PROJECT_ROOT"
+          source venv/bin/activate
+          gunicorn myproject.wsgi:application \
+            --bind 127.0.0.1:8000 \
+            --pid "$PROJECT_ROOT/gunicorn.pid" \
+            --daemon
+
+      - name: Verify process is running
+        run: |
+          PID_FILE="$PROJECT_ROOT/gunicorn.pid"
+          if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+              echo "✅ Django app is running (PID: $PID)"
+            else
+              echo "❌ Process died after start"
+              exit 1
+            fi
+          else
+            echo "❌ PID file not found"
+            exit 1
+          fi
