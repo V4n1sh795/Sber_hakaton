@@ -41,7 +41,7 @@ jobs:
 
       - name: Sync code
         run: |
-          sudo rsync -av --delete \
+          rsync -av --delete \
             --exclude='.git' \
             --exclude='venv' \
             --exclude='*.env' \
@@ -56,8 +56,7 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run migrations
+ 
         run: |
           cd "$PROJECT_ROOT"
           source venv/bin/activate
@@ -73,10 +72,7 @@ jobs:
         run: |
           cd "$PROJECT_ROOT"
           source venv/bin/activate
-          gunicorn myproject.wsgi:application \
-            --bind 127.0.0.1:8000 \
-            --pid "$PROJECT_ROOT/gunicorn.pid" \
-            --daemon
+          python manage.py runserver 0.0.0.0:8000
 
       - name: Verify process is running
         run: |
