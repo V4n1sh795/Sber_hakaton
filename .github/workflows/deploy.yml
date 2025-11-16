@@ -23,6 +23,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Stop running Django app (if any)
+        run: |
+          PID_FILE="$PROJECT_ROOT/gunicorn.pid"
+          if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+              echo "Stopping Gunicorn (PID: $PID)..."
+              kill "$PID"
+              sleep 3
+            fi
+            rm -f "$PID_FILE"
+          else
+            echo "No PID file found. Trying to kill by command name..."
+            pkill -f "gunicorn.*myproject.wsgi" || true
+          fi
+
       - name: Sync code
         run: |
           sudo rsync -av --delete \
@@ -62,3 +78,18 @@ jobs:
             --pid "$PROJECT_ROOT/gunicorn.pid" \
             --daemon
 
+      - name: Verify process is running
+        run: |
+          PID_FILE="$PROJECT_ROOT/gunicorn.pid"
+          if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            if kill -0 "$PID" 2>/dev/null; then
+              echo "✅ Django app is running (PID: $PID)"
+            else
+              echo "❌ Process died after start"
+              exit 1
+            fi
+          else
+            echo "❌ PID file not found"
+            exit 1
+          fi
