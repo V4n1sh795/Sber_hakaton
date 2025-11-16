@@ -51,7 +51,7 @@ jobs:
       #     source venv/bin/activate
       #     python manage.py collectstatic --noinput
 
-      - name: Start Django app with Gunicorn
+      - name: Start Django app with systemctl
         run: |
           systemctl --user daemon-reload
           cd "$PROJECT_ROOT"
