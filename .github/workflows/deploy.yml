@@ -18,7 +18,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     env:
-      PROJECT_ROOT: /opt/myproject
+      PROJECT_ROOT: /opt/project
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
