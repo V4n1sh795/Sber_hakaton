@@ -68,11 +68,11 @@ jobs:
       #     source venv/bin/activate
       #     python manage.py collectstatic --noinput
 
-      - name: Start Django app
+      - name: Start Django app with Gunicorn
         run: |
           cd "$PROJECT_ROOT"
           source venv/bin/activate
-          python manage.py runserver 0.0.0.0:8000
+          gunicorn --bind 0.0.0.0:8000 mysite.wsgi:application
 
       - name: Verify process is running
         run: |
