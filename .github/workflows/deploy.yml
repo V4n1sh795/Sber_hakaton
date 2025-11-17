@@ -53,6 +53,8 @@ jobs:
 
       - name: Start Django app with systemctl
         run: |
+          export XDG_RUNTIME_DIR="/run/user/$UID"
+          export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
           cd "$PROJECT_ROOT"
           source .venv/bin/activate
           systemctl --user restart myproject
