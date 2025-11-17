@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-#i8qrt#=_6ml1aw2y!u8m)dtcmn1wo&-*732bc+b+e8gnue)9!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
 
 # Application definition
 
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
 ]
 
 MIDDLEWARE = [
