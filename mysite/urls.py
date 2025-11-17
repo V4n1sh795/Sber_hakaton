@@ -20,6 +20,6 @@ from users import views as users_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('autorization', users_views.autorization_page),
+    path('autorization/', users_views.autorization_page),
     path('send_auth/', users_views.get_auth)
 ]
