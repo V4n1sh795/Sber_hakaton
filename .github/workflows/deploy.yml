@@ -53,7 +53,6 @@ jobs:
 
       - name: Start Django app with systemctl
         run: |
-          systemctl --user daemon-reload
           cd "$PROJECT_ROOT"
           source .venv/bin/activate
           systemctl --user restart myproject
