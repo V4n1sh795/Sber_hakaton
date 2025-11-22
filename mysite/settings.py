@@ -40,6 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'books',
+    'reviews',
+    'rentals',
+    'events',
+    'favorites',
     'lib_admin',
 ]
 # AUTH_USER_MODEL = 'accounts.CustomUser'
