@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - Библиотека{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="text-center">
+            <h1>Добро пожаловать в библиотеку</h1>
+            <p class="lead mt-4">Система управления библиотекой</p>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">События</h5>
+                            <p class="card-text">Посмотрите предстоящие события и мероприятия библиотеки</p>
+                            <a href="{% url 'events:event_list' %}" class="btn btn-primary">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Книги</h5>
+                            <p class="card-text">Каталог доступных книг в библиотеке</p>
+                            <a href="#" class="btn btn-secondary">Скоро</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Аренда</h5>
+                            <p class="card-text">Управление арендой книг</p>
+                            <a href="#" class="btn btn-secondary">Скоро</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
