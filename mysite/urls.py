@@ -26,6 +26,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('events/', include('events.urls', namespace='events')),
     path('books/', include('books.urls', namespace='books')),
+    path('favorites/', include('favorites.urls', namespace='favorites')),
 ]
 
 # Обработка медиа-файлов в режиме разработки
