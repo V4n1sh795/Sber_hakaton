@@ -69,18 +69,6 @@ def recomendations(request):
         # Получаем все записи аренды пользователя
         rentals = user.rental_set.all()
         # КОД НИЖЕ УДАЛИТЬ НА ПРОДЕ
-        book_loc = Book.objects.filter(title='Shroud').first()
-        Rental.objects.create(
-            user=request.user,
-            book=book_loc,
-            borrow_date='2024-01-01' # или любая дата: date(2025, 11, 23)
-        )
-        book_loc = Book.objects.filter(title='Rage of angels').first()
-        Rental.objects.create(
-            user=request.user,
-            book=book_loc,
-            borrow_date='2024-01-01' # или любая дата: date(2025, 11, 23)
-        )
         # ВОТ ДО СЮДА
         # Получаем только книги (без дубликатов)
         books = Book.objects.filter(rental__user=user).distinct()
