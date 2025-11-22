@@ -1,34 +1,64 @@
 {% extends 'base.html' %}
 
-{% block title %}Список событий{% endblock %}
+{% block title %}События | Библиотека{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h1>Список событий</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📅 События библиотеки</h1>
+        {% if user.is_staff or user.is_superuser %}
+            <a href="{% url 'events:create' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Создать событие
+            </a>
+        {% endif %}
+    </div>
 
-        {% if events %}
-            <div class="row">
-                {% for event in events %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ event.name }}</h5>
-                                <p class="card-text">
-                                    <strong>Дата:</strong> {{ event.date|date:"d.m.Y" }}<br>
-                                    <strong>Рейтинг:</strong> {{ event.rating }}
-                                </p>
-                                {% if event.description %}
-                                    <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if events %}
+        <div class="row">
+            {% for event in events %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if event.event_photo %}
+                            <img src="{{ event.event_photo.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted fs-1">📅</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="text-muted small mb-2">
+                                <i class="bi bi-calendar"></i> {{ event.start_date|date:"d.m.Y H:i" }}
+                                {% if event.end_date %}
+                                    <br><i class="bi bi-clock"></i> до {{ event.end_date|date:"d.m.Y H:i" }}
                                 {% endif %}
-                                <a href="{% url 'events:event_detail' event.id %}" class="btn btn-primary">Подробнее</a>
+                            </p>
+                            {% if event.description %}
+                                <p class="card-text flex-grow-1">{{ event.description|truncatewords:15 }}</p>
+                            {% endif %}
+                            <div class="mt-auto">
+                                <a href="{% url 'events:detail' event.pk %}" class="btn btn-primary btn-sm w-100">
+                                    Подробнее
+                                </a>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
+        </div>
 
         <!-- Пагинация -->
-            <nav aria-label="Page navigation">
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="Навигация по страницам">
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                         <li class="page-item">
@@ -55,10 +85,14 @@
                     {% endif %}
                 </ul>
             </nav>
-        {% else %}
-            <div class="alert alert-info">
-                <p>Событий пока нет.</p>
-            </div>
         {% endif %}
-    </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <p class="mb-0">📭 Событий пока нет.</p>
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'events:create' %}" class="btn btn-primary mt-3">Создать первое событие</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
