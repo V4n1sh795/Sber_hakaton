@@ -152,7 +152,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # МЕДИА файлы (фотографии, документы - загружаемые пользователем)
-MEDIA_URL = '/media/'              # URL для доступа (http://localhost:8000/media/...)
+MEDIA_URL = '/media/'              # URL для доступа
 MEDIA_ROOT = BASE_DIR / 'media'    # Путь на диске где хранятся файлы
 
 # Максимальный размер загружаемого файла (10 MB)
