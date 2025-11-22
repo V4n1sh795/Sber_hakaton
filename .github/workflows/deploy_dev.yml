@@ -25,6 +25,7 @@ jobs:
       - name: Sync code
         run: |
           rsync -av --delete \
+            --exclude='__pycache__'\
             --exclude='.git' \
             --exclude='.venv' \
             --exclude='*.env' \
@@ -34,4 +35,5 @@ jobs:
 
       - name: Run Docker composer
         run: |
+          
           docker compose up -d --build
