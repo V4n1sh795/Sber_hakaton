@@ -1,0 +1,11 @@
+<form method="post">
+    {% csrf_token %}
+    <input name="email" type="email" required placeholder="Email">
+    <input type="password" name="password" required placeholder="Пароль">
+    <input name="name" placeholder="Имя" required>
+    <input name="lastname" placeholder="Фамилия" required>
+    <input name="patronymic" placeholder="Отчество (необязательно)">
+    <input name="role" placeholder="Роль" required>
+    <input name="phone" placeholder="Телефон (необязательно)">
+    <button type="submit">Войти</button>
+</form>

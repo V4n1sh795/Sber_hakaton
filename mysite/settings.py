@@ -33,6 +33,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Application definition
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+LOGIN_URL = '/users/auth/'  # ← куда перенаправлять неавторизованных
+LOGIN_REDIRECT_URL = '/users/profile/'  # ← куда после успешного входа
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

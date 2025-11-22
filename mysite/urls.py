@@ -24,6 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth', users_views.autorization_page),
     path('send_auth', users_views.get_auth),
-
-    path('events/', include('events.urls', namespace='events')),
+    path('users/', include('users.urls'))
 ]
