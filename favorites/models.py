@@ -1,13 +1,14 @@
 from django.db import models
-from users.models import User
+from django.conf import settings
 from books.models import Book
+
 
 class Favorite(models.Model):
     """
     Избранные книги
     """
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
