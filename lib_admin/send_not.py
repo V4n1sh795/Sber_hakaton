@@ -39,4 +39,3 @@ async def send_notification(text, recipient_email):
         return e
     finally:
         server.quit()
-asyncio.run(send_notification("текст, ещё текст", "v4n1shnerush@gmail.com"))
