@@ -1,7 +1,8 @@
 from django.db import models
-from users.models import User
+from django.conf import settings
 from books.models import Book
 from events.models import Event
+
 
 class RatingConstants:
     RATING_CHOICES = [
@@ -12,11 +13,12 @@ class RatingConstants:
         (5, 'Отлично')
     ]
 
+
 class Review(models.Model):
     """
     База для отзыва (абстрактная, для этого таблица не будет создана)
     """
-    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
     content = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
