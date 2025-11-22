@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Информация о книге</h5>
+
+                        <dl class="row">
+                            <!-- Превью картинки -->
+                            <div class="card-img-container">
+                                {% if book.cover_photo %}
+                                    <img src="{{ book.cover_photo.url }}" 
+                                        class="card-img-top" 
+                                        alt="Обложка книги {{ book.title }}"
+                                        style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'images/default-book-cover.jpg' %}" 
+                                        class="card-img-top" 
+                                        alt="Обложка отсутствует"
+                                        style="height: 200px; object-fit: cover; background: #f8f9fa;">
+                                {% endif %}
+                            </div>
+                            <dt class="col-sm-3">Название:</dt>
+                            <dd class="col-sm-9">{{ book.title|linebreaks }}</dd>
+
+                            <dt class="col-sm-3">Автор:</dt>
+                            <dd class="col-sm-9">{{ book.author|linebreaks }}</dd>
+
+                            <dt class="col-sm-3">Жанр:</dt>
+                            <dd class="col-sm-9">{{ book.genre|linebreaks }}</dd>
+
+                            <dt class="col-sm-3">Описание:</dt>
+                            <dd class="col-sm-9">{{ book.description|linebreaks }}</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{% url 'books:BookPagedView' %}" class="btn btn-secondary">Назад к списку</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
