@@ -9,13 +9,17 @@ class Book(models.Model):
     author = models.TextField(null=False, blank=False)
     genre = models.TextField(null=False, blank=False)
     rating = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, default=0.0)
-
-
-class Photo(models.Model):
-    """
-    Фотографии (для ивентов, для экземпляров книг, ...)
-    """
-    image_data = models.BinaryField(null=False, blank=False)
-    content_type = models.TextField(null=False, blank=False)
-    uploaded_at = models.DateField(auto_now_add=True)
-
+    cover_photo = models.ImageField(
+                            upload_to='covers/full/',
+                            null=True, 
+                            blank=True,
+                            verbose_name='Обложка книги',
+                            help_text='Загрузите фотографию книги'
+                        )
+    cover_thumbnail = models.ImageField(
+                            upload_to='covers/thumbnails/',
+                            null=True, 
+                            blank=True,
+                            verbose_name='Превью обложки',
+                            help_text='Генерируемая превью книги'
+    )
