@@ -1,0 +1,37 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      PROJECT_ROOT: /opt/project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Sync code
+        run: |
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='.venv' \
+            --exclude='*.env' \
+            --exclude='media/' \
+            --exclude='staticfiles/' \
+            ./ "$PROJECT_ROOT/"
+
+      - name: Run Docker composer
+        run: |
+          docker compose up -d --build
