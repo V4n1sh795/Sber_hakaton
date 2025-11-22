@@ -2,7 +2,6 @@ from django.db import models
 from users.models import User
 from books.models import Book
 from events.models import Event
-from rentals.models import Rental
 
 class RatingConstants:
     RATING_CHOICES = [
@@ -31,11 +30,11 @@ class ReviewBook(Review):
     book = models.ForeignKey(Book, null=False, blank=False, on_delete=models.CASCADE)
     rating = models.IntegerField(null=False, blank=False, choices=RatingConstants.RATING_CHOICES)
 
-class ReviewRental(Review):
+class ReviewServiceQuality(Review):
     """
-    Отзыв на конкретное бронирование
+    Отзыв о качестве обслуживания
     """
-    rental = models.ForeignKey(Rental, null=False, blank=False, on_delete=models.CASCADE)
+    rating = models.IntegerField(null=False, blank=False, choices=RatingConstants.RATING_CHOICES)
 
 class ReviewEvent(Review):
     """
