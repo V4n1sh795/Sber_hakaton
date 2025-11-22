@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event
+from .models import Event, EventSubscription
 from django.utils import timezone
 
 
@@ -67,3 +67,20 @@ class EventForm(forms.ModelForm):
         if name and len(name) < 5:
             raise forms.ValidationError('Название должно содержать минимум 5 символов.')
         return name
+
+
+class EventSubscriptionForm(forms.ModelForm):
+    """Форма для управления подпиской на событие"""
+    
+    class Meta:
+        model = EventSubscription
+        fields = ['reminder_type']
+        widgets = {
+            'reminder_type': forms.RadioSelect(
+                attrs={'class': 'form-check-input'}
+            )
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['reminder_type'].label = 'Когда вам напомнить?'
