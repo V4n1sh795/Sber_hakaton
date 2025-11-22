@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import Book, CustomUser
 from .serializers import BookSerializer, UserSerializer
 
+
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def add_book(request):
