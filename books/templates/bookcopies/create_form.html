@@ -1,0 +1,110 @@
+<!-- bookcopies/create_form.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Добавить экземпляр книги" }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-book-medical"></i>
+                        {{ page_title|default:"Добавить экземпляр книги" }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Информация о выбранной книге -->
+                    {% if selected_book %}
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle"></i>
+                            Добавляется экземпляр книги:
+                        </h6>
+                        <p class="mb-1"><strong>Название:</strong> {{ selected_book.title }}</p>
+                        <p class="mb-1"><strong>Автор:</strong> {{ selected_book.author|default:"Не указан" }}</p>
+                        <p class="mb-0"><strong>Жанр:</strong> {{ selected_book.genre|default:"Не указан" }}</p>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Вывод общих ошибок формы -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Поле выбора книги показывается только если книга не выбрана заранее -->
+                        {% if not selected_book %}
+                        <div class="mb-3">
+                            <label for="{{ form.book.id_for_label }}" class="form-label required-field">
+                                {{ form.book.label }}
+                            </label>
+                            {{ form.book }}
+                            {% if form.book.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.book.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Фото состояния -->
+                        <div class="mb-4">
+                            <label for="id_book_condition_photo" class="form-label">
+                                Фото состояния
+                            </label>
+                            <input type="file" 
+                                   name="book_condition_photo" 
+                                   id="id_book_condition_photo" 
+                                   class="form-control" 
+                                   accept="image/*">
+                            {% if form.book_condition_photo.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.book_condition_photo.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Загрузите фото, показывающее текущее состояние книги
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Создать экземпляр
+                            </button>
+                            
+                            <!-- Кнопка "Назад" ведет на страницу книги, если она была выбрана -->
+                            {% if selected_book %}
+                            <a href="{% url 'books:BookFullInfoView' selected_book.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Отмена
+                            </a>
+                            {% else %}
+                            <a href="{% url 'books:BookPagedView' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Отмена
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
