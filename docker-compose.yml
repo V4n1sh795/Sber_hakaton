@@ -1,0 +1,94 @@
+version: '3.9'
+
+services:
+  # PostgreSQL база данных
+  db:
+    image: postgres:15-alpine
+    container_name: library_db
+    
+    # Переменные окружения
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_123}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    
+    # Порты
+    ports:
+      - "5432:5432"
+    
+    # Volumes для персистентности данных
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library_user -d library_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    
+    # Сетевая конфигурация
+    networks:
+      - library_network
+
+  # Django приложение
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    container_name: library_web
+    
+    # Команда запуска
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    
+    # Переменные окружения
+    environment:
+      DEBUG: "True"
+      DJANGO_SETTINGS_MODULE: mysite.settings
+      USE_POSTGRES: "True"
+      DB_NAME: library_db
+      DB_USER: library_user
+      DB_PASSWORD: ${DB_PASSWORD:-secure_password_123}
+      DB_HOST: db
+      DB_PORT: 5432
+      ALLOWED_HOSTS: "localhost,127.0.0.1,web"
+    
+    # Порты
+    ports:
+      - "8000:8000"
+    
+    # Volumes для горячей перезагрузки
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    
+    # Зависимость от БД
+    depends_on:
+      db:
+        condition: service_healthy
+    
+    # Сетевая конфигурация
+    networks:
+      - library_network
+    
+    # Интерактивный режим
+    stdin_open: true
+    tty: true
+
+# Именованные volumes
+volumes:
+  postgres_data:
+    driver: local
+  static_volume:
+    driver: local
+
+# Именованная сеть
+networks:
+  library_network:
+    driver: bridge
