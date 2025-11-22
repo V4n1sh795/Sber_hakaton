@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Список событий{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Список событий</h1>
+
+        {% if events %}
+            <div class="row">
+                {% for event in events %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Дата:</strong> {{ event.date|date:"d.m.Y" }}<br>
+                                    <strong>Рейтинг:</strong> {{ event.rating }}
+                                </p>
+                                {% if event.description %}
+                                    <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+                                {% endif %}
+                                <a href="{% url 'events:event_detail' event.id %}" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        <!-- Пагинация -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo; Первая</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% else %}
+            <div class="alert alert-info">
+                <p>Событий пока нет.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
