@@ -5,10 +5,9 @@ class Book(models.Model):
     """
     Книга
     """
-    title = models.TextField(null=False, blank=False)
-    author = models.TextField(null=False, blank=False)
-    genre = models.TextField(null=False, blank=False)
-    rating = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, default=0.0)
+    title = models.CharField(max_length=255, null=False, blank=False)
+    author = models.CharField(max_length=255, null=False, blank=False)
+    genre = models.CharField(max_length=255, null=False, blank=False)
     cover_photo = models.ImageField(
                             upload_to='covers/full/',
                             null=True, 
