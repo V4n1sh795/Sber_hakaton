@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список книг</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .book-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .book-card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .book-card p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .no-books {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Список книг</h1>
+
+    {% if books %}
+        {% for book in books %}
+            <div class="book-card">
+                <h2>{{ book.title }}</h2>
+                <p><strong>Автор:</strong> {{ book.author }}</p>
+                <p><strong>Жанр:</strong> {{ book.genre }}</p>
+                <p><strong>Описание:</strong>{{ book.description|linebreaks }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-books">
+            <p>К сожалению, книги не найдены.</p>
+        </div>
+    {% endif %}
+</body>
+</html>
