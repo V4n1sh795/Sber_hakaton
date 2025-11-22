@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN python3 manage.py collectstatic --noinput
-RUN python3 manage.py makemigrate
+RUN python3 manage.py makemigrations
 
 # Expose the port where the application will run
 EXPOSE 8000
