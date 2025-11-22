@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{ event.name }}</h1>
+                <hr>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Информация о событии</h5>
+
+                        <dl class="row">
+                            <dt class="col-sm-3">Дата:</dt>
+                            <dd class="col-sm-9">{{ event.date|date:"d.m.Y" }}</dd>
+
+                            <dt class="col-sm-3">Рейтинг:</dt>
+                            <dd class="col-sm-9">
+                                {{ event.rating }}
+                                <span class="text-warning">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= event.rating %}
+                                            &#9733;
+                                        {% else %}
+                                            &#9734;
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </dd>
+
+                            {% if event.description %}
+                                <dt class="col-sm-3">Описание:</dt>
+                                <dd class="col-sm-9">{{ event.description|linebreaks }}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{% url 'events:event_list' %}" class="btn btn-secondary">Назад к списку</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

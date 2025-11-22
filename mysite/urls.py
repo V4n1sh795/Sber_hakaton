@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views as users_views
+from mysite import views as mysite_views
 
 urlpatterns = [
+    path('', mysite_views.home, name='home'),
     path('admin/', admin.site.urls),
     path('auth', users_views.autorization_page),
-    path('send_auth', users_views.get_auth)
+    path('send_auth', users_views.get_auth),
+
+    path('events/', include('events.urls', namespace='events')),
 ]
