@@ -4,6 +4,15 @@ from books.models import Book
 from events.models import Event
 from rentals.models import Rental
 
+class RatingConstants:
+    RATING_CHOICES = [
+        (1, 'Ужасно'),
+        (2, 'Плохо'),
+        (3, 'Неплохо'),
+        (4, 'Хорошо'),
+        (5, 'Отлично')
+    ]
+
 class Review(models.Model):
     """
     База для отзыва (абстрактная, для этого таблица не будет создана)
@@ -20,7 +29,7 @@ class ReviewBook(Review):
     Отзыв на книгу
     """
     book = models.ForeignKey(Book, null=False, blank=False, on_delete=models.CASCADE)
-    rating = models.IntegerField(null=False, blank=False, choices=[1,2,3,4,5])
+    rating = models.IntegerField(null=False, blank=False, choices=RatingConstants.RATING_CHOICES)
 
 class ReviewRental(Review):
     """
@@ -33,4 +42,4 @@ class ReviewEvent(Review):
     Отзыв на событие
     """
     event = models.ForeignKey(Event, null=False, blank=False, on_delete=models.CASCADE)
-    rating = models.IntegerField(null=False, blank=False, choices=[1,2,3,4,5])
+    rating = models.IntegerField(null=False, blank=False, choices=RatingConstants.RATING_CHOICES)

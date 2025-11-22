@@ -8,7 +8,7 @@ class Book(models.Model):
     title = models.TextField(null=False, blank=False)
     author = models.TextField(null=False, blank=False)
     genre = models.TextField(null=False, blank=False)
-    rating = models.DecimalField(null=False, blank=False, default=0.0)
+    rating = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, default=0.0)
 
 
 class Photo(models.Model):
