@@ -8,8 +8,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+
+
 # Copy the Django project files
 COPY . .
+
+RUN python3 manage.py collectstatic --noinput
+RUN python3 manage.py makemigrate
 
 # Expose the port where the application will run
 EXPOSE 8000
