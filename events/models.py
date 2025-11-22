@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 
 class Event(models.Model):
@@ -43,3 +44,89 @@ class Event(models.Model):
     
     def get_absolute_url(self):
         return reverse('events:detail', kwargs={'pk': self.pk})
+    
+    def is_upcoming(self):
+        """Проверка, что событие ещё не началось"""
+        return self.start_date > timezone.now()
+
+
+class EventSubscription(models.Model):
+    """Подписка пользователя на событие"""
+    
+    REMINDER_CHOICES = [
+        ('24h', '24 часа до события'),
+        ('2h', '2 часа до события'),
+        ('both', '24 часа и 2 часа'),
+        ('none', 'Без напоминаний'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('active', 'Активна'),
+        ('unsubscribed', 'Отписан'),
+        ('expired', 'Истекла'),
+    ]
+    
+    # Связи
+    user = models.ForeignKey(
+        'users.CustomUser',
+        on_delete=models.CASCADE,
+        related_name='event_subscriptions',
+        verbose_name='Подписчик'
+    )
+    
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+        verbose_name='Событие'
+    )
+    
+    # Параметры подписки
+    reminder_type = models.CharField(
+        max_length=10,
+        choices=REMINDER_CHOICES,
+        default='both',
+        verbose_name='Тип напоминания'
+    )
+    
+    # Статус
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active',
+        verbose_name='Статус'
+    )
+    
+    # Отслеживание отправки напоминаний
+    reminder_24h_sent = models.BooleanField(
+        default=False,
+        verbose_name='Напоминание за 24ч отправлено'
+    )
+    reminder_1h_sent = models.BooleanField(
+        default=False,
+        verbose_name='Напоминание за 2ч отправлено'
+    )
+    
+    # Даты
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+    unsubscribed_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = 'Подписка на событие'
+        verbose_name_plural = 'Подписки на события'
+        unique_together = [['user', 'event']]
+        ordering = ['-subscribed_at']
+    
+    def __str__(self):
+        return f"{self.user} подписан на {self.event}"
+    
+    def reset_reminders(self):
+        """Сбросить флаги напоминаний (для пересчета)"""
+        self.reminder_24h_sent = False
+        self.reminder_1h_sent = False
+        self.save()
+    
+    def is_valid_subscription(self):
+        """Активна ли подписка"""
+        return self.status == 'active' and self.event.is_upcoming()
+

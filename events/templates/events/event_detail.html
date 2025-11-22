@@ -64,6 +64,59 @@
                         <i class="bi bi-arrow-left"></i> К списку событий
                     </a>
                     
+                    {% if user.is_authenticated %}
+                        <hr>
+                        <p class="small text-muted mb-2">Подписка на событие</p>
+                        
+                        {% if user_subscription %}
+                            <div class="alert alert-success py-2 mb-2">
+                                <small>
+                                    <i class="bi bi-check-circle"></i> Вы подписаны<br>
+                                    Напоминание: 
+                                    {% if user_subscription.reminder_type == '24h' %}за 24 часа
+                                    {% elif user_subscription.reminder_type == '2h' %}за 2 часа
+                                    {% elif user_subscription.reminder_type == 'both' %}за 24 и 2 часа
+                                    {% else %}отключено
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <form method="post" action="{% url 'events:unsubscribe' event.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="bi bi-bell-slash"></i> Отписаться
+                                </button>
+                            </form>
+                        {% else %}
+                            {% if event_is_upcoming %}
+                                <form method="post" action="{% url 'events:subscribe' event.pk %}">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label for="reminder_type" class="form-label small">Напоминание:</label>
+                                        <select name="reminder_type" id="reminder_type" class="form-select form-select-sm">
+                                            <option value="none">Без напоминания</option>
+                                            <option value="24h">За 24 часа</option>
+                                            <option value="2h">За 2 часа</option>
+                                            <option value="both" selected>За 24 и 2 часа</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                        <i class="bi bi-bell"></i> Подписаться
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-warning py-2 mb-0">
+                                    <small>Событие уже началось или завершилось</small>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        <hr>
+                        <p class="small text-muted mb-2">Чтобы подписаться на событие, войдите в систему</p>
+                        <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Войти
+                        </a>
+                    {% endif %}
+                    
                     {% if user.is_staff or user.is_superuser %}
                         <hr>
                         <p class="small text-muted mb-2">Управление (staff)</p>
