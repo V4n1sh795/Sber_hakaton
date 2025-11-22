@@ -2,9 +2,9 @@ from django.db import models
 
 class UserRoles:
     ROLE_CHOICES = [
-        'User',
-        'Admin',
-        'Staff'
+        ('USER', 'User'),
+        ('ADMIN', 'Admin'),
+        ('Staff', 'Staff')
     ]
 
 
