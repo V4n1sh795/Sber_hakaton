@@ -4,6 +4,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from rentals.models import Rental
+from books.models import Book
+import users.rec as rec
 
 
 def autorization_page(request):
@@ -17,6 +20,7 @@ def login_view(request):
     """
     Вход в систему для всех типов пользователей
     """
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -57,3 +61,21 @@ def logout_view(request):
     
     # Если GET - показываем страницу подтверждения
     return render(request, 'users/logout_confirm.html')
+@login_required
+def recomendations(request):
+    if request.method == 'GET':
+        user = request.user  # или любой объект пользователя
+
+        # Получаем все записи аренды пользователя
+        rentals = user.rental_set.all()
+        # КОД НИЖЕ УДАЛИТЬ НА ПРОДЕ
+        # ВОТ ДО СЮДА
+        # Получаем только книги (без дубликатов)
+        books = Book.objects.filter(rental__user=user).distinct()
+        res = []
+        for book in books:
+            res.append(rec.recommend(book.title))
+        res = [book for sublist in res for book in sublist]
+        print(res)
+        return render(request, 'users/recomedation.html', {'books': res})
+    
