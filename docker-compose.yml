@@ -8,8 +8,8 @@ services:
     
     # Переменные окружения
     environment:
-      POSTGRES_DB: library_db
-      POSTGRES_USER: library_user
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_123}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     
@@ -52,8 +52,8 @@ services:
       DEBUG: "True"
       DJANGO_SETTINGS_MODULE: mysite.settings
       USE_POSTGRES: "True"
-      DB_NAME: library_db
-      DB_USER: library_user
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD:-secure_password_123}
       DB_HOST: db
       DB_PORT: 5432
