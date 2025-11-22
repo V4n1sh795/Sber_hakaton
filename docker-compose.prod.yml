@@ -55,7 +55,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-secure_password_123}
       DB_HOST: db
       DB_PORT: 5432
-      ALLOWED_HOSTS: ['*']
+      ALLOWED_HOSTS: "localhost,127.0.0.1,web,100.91.118.125"
     
     # Порты
     ports:
