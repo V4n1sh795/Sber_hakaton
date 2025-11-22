@@ -1,11 +1,44 @@
-<form method="post">
-    {% csrf_token %}
-    <input name="email" type="email" required placeholder="Email">
-    <input type="password" name="password" required placeholder="Пароль">
-    <input name="name" placeholder="Имя" required>
-    <input name="lastname" placeholder="Фамилия" required>
-    <input name="patronymic" placeholder="Отчество (необязательно)">
-    <input name="role" placeholder="Роль" required>
-    <input name="phone" placeholder="Телефон (необязательно)">
-    <button type="submit">Войти</button>
-</form>
+{% extends 'base.html' %}
+
+{% block header %}
+    <!-- Минимальный хедер для страниц логина/регистрации -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span style="font-size: 24px;">📚</span>
+                Библиотека №14
+            </a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block footer %}
+    <!-- Упрощенный футер для авторизации -->
+    <footer class="bg-dark text-white mt-5 py-2">
+        <div class="container text-center text-white-50">
+            <p class="mb-0">&copy; 2024 Библиотека №14</p>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block title %}Авторизация | Библиотека{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-3">Добро пожаловать в библиотеку</h3>
+                    <p class="text-muted">Для входа используйте учётные данные, выданные сотрудником библиотеки.</p>
+                    <div class="d-grid gap-2 col-6 mx-auto mt-4">
+                        <a href="{% url 'login' %}" class="btn btn-success">Войти</a>
+                    </div>
+                    <hr class="my-4">
+                    <p class="small text-muted">Нет аккаунта? Обратитесь к сотруднику библиотеки — регистрация через сайт отключена.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

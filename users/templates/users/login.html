@@ -1,6 +1,100 @@
-<form method="post">
-    {% csrf_token %}
-    <input name="email" required placeholder="Email">
-    <input type="password" name="password" required placeholder="Пароль">
-    <button type="submit">Войти</button>
-</form>
+{% extends 'base.html' %}
+
+{% block title %}Вход | Библиотека{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">🔑 Вход в аккаунт</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Сообщения об ошибках -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Email *
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="example@library.local"
+                                   autocomplete="email"
+                                   required>
+                        </div>
+                        
+                        <!-- Пароль -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                Пароль *
+                            </label>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Введите пароль"
+                                   autocomplete="current-password"
+                                   minlength="8"
+                                   required>
+                        </div>
+                        
+                        <!-- Запомнить меня -->
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" 
+                                   id="id_remember" name="remember">
+                            <label class="form-check-label" for="id_remember">
+                                Запомнить меня
+                            </label>
+                        </div>
+                        
+                        <!-- Кнопка -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Ссылки -->
+                    <p class="text-center mb-2">
+                        <small class="text-muted">Забыли пароль? Обратитесь к сотруднику библиотеки для сброса пароля.</small>
+                    </p>
+
+                    <p class="text-center">
+                        <small class="text-muted">Регистрация через сайт отключена. Аккаунты выдаются сотрудниками библиотеки.</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border-radius: 0.5rem;
+    }
+    
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>
+{% endblock %}
