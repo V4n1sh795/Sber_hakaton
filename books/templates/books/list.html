@@ -1,0 +1,88 @@
+<!-- books/list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Каталог книг</h1>
+    
+    <!-- Пагинация сверху -->
+    {% if is_paginated %}
+    <div class="row mb-4">
+        <div class="col">
+            {% include 'includes/pagination.html' %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Сетка карточек -->
+    <div class="row">
+        {% for book in books %}
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card h-100 book-card">
+                <!-- Превью картинки -->
+                <div class="card-img-container">
+                    {% if book.cover_thumbnail %}
+                        <img src="{{ book.cover_thumbnail.url }}" 
+                             class="card-img-top" 
+                             alt="Обложка книги {{ book.title }}"
+                             style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/default-book-cover.jpg' %}" 
+                             class="card-img-top" 
+                             alt="Обложка отсутствует"
+                             style="height: 200px; object-fit: cover; background: #f8f9fa;">
+                    {% endif %}
+                </div>
+
+                <!-- Информация о книге -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title book-title" title="{{ book.title }}">
+                        {{ book.title|truncatechars:50 }}
+                    </h5>
+                    
+                    <p class="card-text text-muted mb-2">
+                        <strong>Автор:</strong> 
+                        <span class="book-author">{{ book.author|default:"Не указан" }}</span>
+                    </p>
+                    
+                    {% if book.genre %}
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <strong>Жанр:</strong> {{ book.genre }}
+                        </small>
+                    </p>
+                    {% endif %}
+
+                    <!-- Кнопки действий -->
+                    <div class="mt-auto">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'books:BookFullInfoView' book.pk %}" 
+                               class="btn btn-primary btn-sm">
+                                Подробнее
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>Книги не найдены</h4>
+                <p>Попробуйте изменить параметры поиска</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация снизу -->
+    {% if is_paginated %}
+    <div class="row mt-4">
+        <div class="col">
+            {% include 'includes/pagination.html' %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
