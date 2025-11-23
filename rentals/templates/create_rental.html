@@ -99,7 +99,7 @@
                                 <i class="fas fa-copy"></i>
                                 Выбранный экземпляр
                             </h6>
-                            {% if form.book.value %}
+                            {% if available_copies_count > 0 %}
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
                                     <strong>Система автоматически выбрала доступный экземпляр</strong>
@@ -128,8 +128,6 @@
                             </h6>
                             <ul class="mb-0">
                                 <li>Максимальный срок аренды - 30 дней</li>
-                                <li>Продление аренды возможно при отсутствии других броней</li>
-                                <li>За просрочку возврата взимается штраф 10 руб./день</li>
                                 <li>Книга должна быть возвращена в том же состоянии</li>
                                 <li>Система автоматически выбирает доступный экземпляр</li>
                             </ul>
@@ -197,7 +195,7 @@
 
                         <!-- Кнопки -->
                         <div class="d-flex gap-2 mt-4">
-                            {% if form.book.value %}
+                            {% if available_copies_count > 0 %}
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-check-circle"></i>
                                 Подтвердить бронирование
@@ -220,14 +218,6 @@
                                 <i class="fas fa-arrow-left"></i>
                                 Назад к списку
                             </a>
-                            {% endif %}
-
-                            <!-- Кнопка обновления выбора экземпляра -->
-                            {% if available_copies_count > 0 %}
-                            <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
-                                <i class="fas fa-sync-alt"></i>
-                                Выбрать другой экземпляр
-                            </button>
                             {% endif %}
                         </div>
                     </form>

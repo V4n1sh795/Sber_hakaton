@@ -40,7 +40,7 @@ class EventAdmin(admin.ModelAdmin):
     
     def subscribers_count(self, obj):
         """Количество подписчиков"""
-        count = obj.eventsubscription_set.filter(status='active').count()
+        count = obj.subscriptions.filter(status='active').count()
         return format_html('<b>{}</b>', count)
     subscribers_count.short_description = 'Подписчиков'
 
