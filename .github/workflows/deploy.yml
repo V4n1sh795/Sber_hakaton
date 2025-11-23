@@ -47,11 +47,11 @@ jobs:
           source .venv/bin/activate
           python manage.py migrate --noinput
 
-      # - name: Collect static files
-      #   run: |
-      #     cd "$PROJECT_ROOT"
-      #     source venv/bin/activate
-      #     python manage.py collectstatic --noinput
+      - name: Collect static files
+        run: |
+          cd "$PROJECT_ROOT"
+          source .venv/bin/activate
+          python manage.py collectstatic --noinput
       - name: Start Django app with systemctl
         run: |
           export XDG_RUNTIME_DIR="/run/user/$UID"
