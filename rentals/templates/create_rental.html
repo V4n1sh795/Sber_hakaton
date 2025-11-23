@@ -1,0 +1,286 @@
+<!-- books/create_rental.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Бронирование книги" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.rental-info-card {
+    border-left: 4px solid #0d6efd;
+}
+.user-info-card {
+    border-left: 4px solid #198754;
+}
+.terms-card {
+    border-left: 4px solid #ffc107;
+}
+.copy-card {
+    border-left: 4px solid #6f42c1;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-bookmark"></i>
+                        {{ page_title|default:"Бронирование книги" }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Информация о пользователе -->
+                    <div class="card user-info-card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-user"></i>
+                                Информация о читателе
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>ФИО:</strong> {{ current_user.get_full_name|default:current_user.username }}</p>
+                                    <p class="mb-1"><strong>Email:</strong> {{ current_user.email|default:"Не указан" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Логин:</strong> {{ current_user.username }}</p>
+                                    <p class="mb-0"><strong>Дата регистрации:</strong> {{ current_user.date_joined|date:"d.m.Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Информация о книге -->
+                    {% if selected_book %}
+                    <div class="card rental-info-card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-book"></i>
+                                Информация о книге
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    {% if selected_book.cover_thumbnail %}
+                                        <img src="{{ selected_book.cover_thumbnail.url }}" 
+                                             class="img-fluid rounded" 
+                                             alt="Обложка книги {{ selected_book.title }}"
+                                             style="max-height: 150px;">
+                                    {% else %}
+                                        <img src="{% static 'images/default-book-cover.jpg' %}" 
+                                             class="img-fluid rounded" 
+                                             alt="Обложка отсутствует"
+                                             style="max-height: 150px;">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-9">
+                                    <p class="mb-1"><strong>Название:</strong> {{ selected_book.title }}</p>
+                                    <p class="mb-1"><strong>Автор:</strong> {{ selected_book.author|default:"Не указан" }}</p>
+                                    <p class="mb-1"><strong>Жанр:</strong> {{ selected_book.genre|default:"Не указан" }}</p>
+                                    <p class="mb-0">
+                                        <strong>Доступные экземпляры:</strong> 
+                                        <span class="badge {% if available_copies_count > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ available_copies_count }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Информация о выбранном экземпляре -->
+                    <div class="card copy-card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-copy"></i>
+                                Выбранный экземпляр
+                            </h6>
+                            {% if form.book.value %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Система автоматически выбрала доступный экземпляр</strong>
+                                    <p class="mb-0 mt-1">
+                                        Будет выдан случайный доступный экземпляр книги из {{ available_copies_count }} доступных.
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>Нет доступных экземпляров</strong>
+                                    <p class="mb-0 mt-1">
+                                        В данный момент нет доступных экземпляров этой книги для бронирования.
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Условия аренды -->
+                    <div class="card terms-card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                Условия аренды
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Максимальный срок аренды - 30 дней</li>
+                                <li>Продление аренды возможно при отсутствии других броней</li>
+                                <li>За просрочку возврата взимается штраф 10 руб./день</li>
+                                <li>Книга должна быть возвращена в том же состоянии</li>
+                                <li>Система автоматически выбирает доступный экземпляр</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <form method="post" id="rental-form">
+                        {% csrf_token %}
+                        
+                        <!-- Скрытое поле с выбранным экземпляром -->
+                        {{ form.book }}
+                        
+                        <!-- Вывод общих ошибок формы -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Дата выдачи -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.borrow_date.id_for_label }}" class="form-label required-field">
+                                    {{ form.borrow_date.label }}
+                                </label>
+                                {{ form.borrow_date }}
+                                {% if form.borrow_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.borrow_date.errors %}
+                                            <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Дата, когда книга будет выдана читателю
+                                </div>
+                            </div>
+
+                            <!-- Планируемая дата возврата -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.expected_return_date.id_for_label }}" class="form-label">
+                                    {{ form.expected_return_date.label }}
+                                </label>
+                                {{ form.expected_return_date }}
+                                {% if form.expected_return_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.expected_return_date.errors %}
+                                            <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Ориентировочная дата возврата (необязательно)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Расчет срока аренды -->
+                        <div class="alert alert-info" id="rental-duration-info" style="display: none;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <strong>Срок аренды:</strong> <span id="duration-days">0</span> дней
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-2 mt-4">
+                            {% if form.book.value %}
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i>
+                                Подтвердить бронирование
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-success btn-lg" disabled>
+                                <i class="fas fa-times-circle"></i>
+                                Нет доступных экземпляров
+                            </button>
+                            {% endif %}
+                            
+                            <!-- Кнопка "Назад" -->
+                            {% if selected_book %}
+                            <a href="{% url 'books:BookFullInfoView' selected_book.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Назад к книге
+                            </a>
+                            {% else %}
+                            <a href="{% url 'books:BookPagedView' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Назад к списку
+                            </a>
+                            {% endif %}
+
+                            <!-- Кнопка обновления выбора экземпляра -->
+                            {% if available_copies_count > 0 %}
+                            <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
+                                <i class="fas fa-sync-alt"></i>
+                                Выбрать другой экземпляр
+                            </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const borrowDateInput = document.getElementById('{{ form.borrow_date.id_for_label }}');
+    const returnDateInput = document.getElementById('{{ form.expected_return_date.id_for_label }}');
+    const durationInfo = document.getElementById('rental-duration-info');
+    const durationDays = document.getElementById('duration-days');
+    
+    function calculateDuration() {
+        const borrowDate = new Date(borrowDateInput.value);
+        const returnDate = new Date(returnDateInput.value);
+        
+        if (borrowDateInput.value && returnDateInput.value && returnDate > borrowDate) {
+            const diffTime = Math.abs(returnDate - borrowDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            durationDays.textContent = diffDays;
+            durationInfo.style.display = 'block';
+            
+            // Предупреждение при длительной аренде
+            if (diffDays > 30) {
+                durationInfo.className = 'alert alert-warning';
+                durationInfo.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Внимание!</strong> Срок аренды <span id="duration-days">${diffDays}</span> дней превышает рекомендуемый (30 дней)
+                `;
+            } else {
+                durationInfo.className = 'alert alert-info';
+                durationInfo.innerHTML = `
+                    <i class="fas fa-calendar-alt"></i>
+                    <strong>Срок аренды:</strong> <span id="duration-days">${diffDays}</span> дней
+                `;
+            }
+        } else {
+            durationInfo.style.display = 'none';
+        }
+    }
+    
+    borrowDateInput.addEventListener('change', calculateDuration);
+    returnDateInput.addEventListener('change', calculateDuration);
+    
+    // Инициализация при загрузке
+    calculateDuration();
+});
+</script>
+{% endblock %}
