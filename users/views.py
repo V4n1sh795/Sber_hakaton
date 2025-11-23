@@ -44,7 +44,37 @@ def profile_view(request):
     """
     Профиль пользователя
     """
-    return render(request, 'users/profile.html', {'user': request.user})
+    from django.utils import timezone
+    
+    # Активные выдачи (книги не возвращены)
+    active_rentals = Rental.objects.filter(
+        user=request.user,
+        return_date__isnull=True
+    ).select_related('book')
+    
+    # История выдач (книги возвращены)
+    history_rentals = Rental.objects.filter(
+        user=request.user,
+        return_date__isnull=False
+    ).select_related('book').order_by('-return_date')[:10]
+    
+    # Уведомления о просроченных книгах
+    notifications = []
+    today = timezone.now().date()
+    for rental in active_rentals:
+        if rental.borrow_date:
+            days_passed = (today - rental.borrow_date).days
+            if days_passed > 30:  # Книга должна быть возвращена через 30 дней
+                notifications.append(f"{rental.book.title} — просрочено")
+    
+    context = {
+        'user': request.user,
+        'active_rentals': active_rentals,
+        'history_rentals': history_rentals,
+        'notifications': notifications,
+    }
+    
+    return render(request, 'users/profile.html', context)
 
 
 @login_required
@@ -57,7 +87,7 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         messages.success(request, "Вы успешно вышли из системы.")
-        return redirect('login')
+        return redirect('users:login')
     
     # Если GET - показываем страницу подтверждения
     return render(request, 'users/logout_confirm.html')

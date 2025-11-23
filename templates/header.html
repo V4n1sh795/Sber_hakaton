@@ -1,5 +1,21 @@
+{% load static %}
 <div class="container">
-    <a href="{% url 'home' %}" class="logo" aria-label="На главную">
-        <img src="img/Логотип.png" alt="Логотип компании">
-    </a>
+    <div class="header-top">
+    <div class="menu-toggle" id="menuToggle">
+        <img src="{% static 'img/header/menu.png' %}" alt="Кнопка меню">
+    </div>
+    <img src="{% static 'img/header/logo.png' %}" alt="Логотип" class="logo">
+    </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+    <span class="close-btn" id="closeBtn">×</span>
+    </div>
+    <ul>
+    <li><a href="{% url 'home' %}">Главная</a></li>
+    <li><a href="{% url 'books:BookPagedView' %}">Книжный каталог</a></li>
+    <li><a href="{% url 'events:list' %}">Мероприятия</a></li>
+    <li><a href="{% url 'users:profile' %}">Профиль</a></li>
+    </ul>
 </div>

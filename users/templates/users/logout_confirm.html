@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <p>Вы действительно хотите выйти из системы?</p>
                     
-                    <form method="post" action="{% url 'logout' %}">
+                    <form method="post" action="{% url 'users:logout' %}">
                         {% csrf_token %}
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-danger">Да, выйти</button>

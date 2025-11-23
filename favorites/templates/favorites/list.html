@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Мое избранное{% endblock %}
+{% block title %}Избранное{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/favorite.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-4">Мое избранное</h1>
-    
+<div class="container py-4">
+    <!-- Заголовок -->
+    <h1 class="page-title mb-4">Избранное</h1>
+
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -15,96 +21,77 @@
             </div>
         {% endfor %}
     {% endif %}
-    
-    <!-- Пагинация сверху -->
-    {% if is_paginated %}
-    <div class="row mb-4">
-        <div class="col">
-            {% include 'pagination.html' %}
-        </div>
-    </div>
-    {% endif %}
 
-    <!-- Сетка карточек -->
-    <div class="row">
-        {% for favorite in favorites %}
-        {% with book=favorite.book %}
-        <div class="col-md-4 col-lg-3 mb-4">
-            <div class="card h-100 book-card">
-                <!-- Превью картинки -->
-                <div class="card-img-container">
-                    {% if book.cover_thumbnail %}
-                        <img src="{{ book.cover_thumbnail.url }}" 
-                             class="card-img-top" 
-                             alt="Обложка книги {{ book.title }}"
-                             style="height: 200px; object-fit: cover;">
-                    {% else %}
-                        <img src="{% static 'images/default-book-cover.jpg' %}" 
-                             class="card-img-top" 
-                             alt="Обложка отсутствует"
-                             style="height: 200px; object-fit: cover; background: #f8f9fa;">
-                    {% endif %}
-                </div>
-
-                <!-- Информация о книге -->
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title book-title" title="{{ book.title }}">
-                        {{ book.title|truncatechars:50 }}
-                    </h5>
-                    
-                    <p class="card-text text-muted mb-2">
-                        <strong>Автор:</strong> 
-                        <span class="book-author">{{ book.author|default:"Не указан" }}</span>
-                    </p>
-                    
-                    {% if book.genre %}
-                    <p class="card-text">
-                        <small class="text-muted">
-                            <strong>Жанр:</strong> {{ book.genre }}
-                        </small>
-                    </p>
-                    {% endif %}
-
-                    <!-- Кнопки действий -->
-                    <div class="mt-auto">
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'books:BookFullInfoView' book.pk %}" 
-                               class="btn btn-primary btn-sm">
-                                Подробнее
-                            </a>
-                            <form method="post" action="{% url 'favorites:remove_from_favorites' book.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-warning btn-sm w-100">
-                                    <i class="bi bi-star-fill"></i> Удалить из избранного
-                                </button>
-                            </form>
+    <!-- Слайдер избранных книг -->
+    <div class="row g-4">
+        <div class="col-12">
+            {% if favorites %}
+            <div class="favorites-slider">
+                <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
+                <div class="books-outer">
+                    <div class="books-container">
+                        {% for favorite in favorites %}
+                        {% with book=favorite.book %}
+                        <!-- Книга -->
+                        <div class="book-item text-center">
+                            {% if book.cover_thumbnail %}
+                                <img src="{{ book.cover_thumbnail.url }}" alt="Обложка книги {{ book.title }}" class="book-img mb-2">
+                            {% else %}
+                                <img src="{% static 'img/catalog/1984_book.png' %}" alt="Обложка книги" class="book-img mb-2">
+                            {% endif %}
+                            <div class="book-info">
+                                <p class="book-title">{{ book.title|truncatechars:50 }}</p>
+                                <p class="book-author">{{ book.author|default:"Автор не указан" }}</p>
+                                <div class="book-actions mt-3">
+                                    <a href="{% url 'books:BookFullInfoView' book.pk %}" class="btn-reserve w-100 mb-2">
+                                        <i class="bi bi-info-circle me-2"></i>Подробнее
+                                    </a>
+                                    <form method="post" action="{% url 'favorites:remove_from_favorites' book.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-delete w-100">
+                                            <i class="bi bi-trash me-2"></i>Удалить
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                        {% endwith %}
+                        {% endfor %}
                     </div>
                 </div>
+                <button class="slider-btn next"><i class="bi bi-chevron-right"></i></button>
             </div>
-        </div>
-        {% endwith %}
-        {% empty %}
-        <div class="col-12">
+            {% else %}
             <div class="alert alert-info text-center">
                 <h4>У вас пока нет избранных книг</h4>
                 <p>Вы можете добавить книги в избранное из <a href="{% url 'books:BookPagedView' %}">каталога</a></p>
             </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
 
-    <!-- Пагинация снизу -->
-    {% if is_paginated %}
-    <div class="row mt-4">
-        <div class="col">
-            {% include 'pagination.html' %}
-        </div>
-    </div>
-    {% endif %}
-    
     <div class="mt-3">
         <a href="{% url 'books:BookPagedView' %}" class="btn btn-secondary">Назад к каталогу</a>
     </div>
 </div>
+
+<script>
+    // Слайдер для избранных книг
+    const slider = document.querySelector('.favorites-slider');
+    if (slider) {
+        const container = slider.querySelector('.books-container');
+        const prevBtn = slider.querySelector('.prev');
+        const nextBtn = slider.querySelector('.next');
+        
+        if (container && prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                container.scrollBy({ left: -250, behavior: 'smooth' });
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                container.scrollBy({ left: 250, behavior: 'smooth' });
+            });
+        }
+    }
+</script>
 {% endblock %}
