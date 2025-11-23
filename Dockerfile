@@ -15,4 +15,3 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the Django application (e.g., using Gunicorn)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application"]
