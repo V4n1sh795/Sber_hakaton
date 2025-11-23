@@ -21,7 +21,7 @@ class StaffUserCreationForm(forms.ModelForm):
     
     class Meta:
         model = CustomUser
-        fields = ['email', 'name', 'lastname', 'patronymic', 'phone', 'is_staff', 'generated_password']
+        fields = ['email', 'name', 'lastname', 'patronymic', 'phone', 'generated_password']
         widgets = {
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
@@ -50,10 +50,6 @@ class StaffUserCreationForm(forms.ModelForm):
             'lastname': 'Фамилия',
             'patronymic': 'Отчество',
             'phone': 'Телефон',
-            'is_staff': 'Сотрудник библиотеки',
-        }
-        help_texts = {
-            'is_staff': 'Отметьте, если создаете аккаунт сотрудника библиотеки',
         }
     
     def __init__(self, *args, **kwargs):

@@ -38,11 +38,13 @@
                             <dt class="col-sm-3">Описание:</dt>
                             <dd class="col-sm-9">{{ book.description|linebreaks }}</dd>
 
+                            {% if user.is_staff or user.is_superuser %}
                             <a href="{% url 'books:CreateBookCopyView' book.pk %}" 
-                            class="btn btn-success">
+                            class="btn btn-success me-2">
                                 <i class="fas fa-plus-circle"></i>
                                 Добавить экземпляр
                             </a>
+                            {% endif %}
                         </dl>
                     </div>
                 </div>

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Event, EventSubscription
 from .forms import EventForm
+from .tasks import send_subscription_confirmation_email
 
 
 def is_staff_or_superuser(user):
@@ -144,29 +145,40 @@ def event_subscribe(request, pk):
         messages.error(request, 'Нельзя подписаться на событие, которое уже началось или завершилось.')
         return redirect('events:detail', pk=pk)
     
-    # Проверяем, нет ли уже активной подписки
-    existing_subscription = EventSubscription.objects.filter(
-        event=event,
-        user=request.user,
-        status='active'
-    ).first()
-    
-    if existing_subscription:
-        messages.warning(request, 'Вы уже подписаны на это событие.')
-        return redirect('events:detail', pk=pk)
-    
     # Получаем тип напоминания из формы
     reminder_type = request.POST.get('reminder_type', 'none')
     
-    # Создаём подписку
-    subscription = EventSubscription.objects.create(
+    # Проверяем, есть ли уже подписка (активная или неактивная)
+    existing_subscription = EventSubscription.objects.filter(
         event=event,
-        user=request.user,
-        reminder_type=reminder_type,
-        status='active'
-    )
+        user=request.user
+    ).first()
     
-    messages.success(request, f'Вы успешно подписались на событие "{event.name}".')
+    if existing_subscription:
+        if existing_subscription.status == 'active':
+            messages.warning(request, 'Вы уже подписаны на это событие.')
+            return redirect('events:detail', pk=pk)
+        else:
+            # Реактивируем существующую подписку
+            existing_subscription.status = 'active'
+            existing_subscription.reminder_type = reminder_type
+            existing_subscription.reminder_24h_sent = False
+            existing_subscription.reminder_1h_sent = False
+            existing_subscription.save()
+            subscription = existing_subscription
+    else:
+        # Создаём новую подписку
+        subscription = EventSubscription.objects.create(
+            event=event,
+            user=request.user,
+            reminder_type=reminder_type,
+            status='active'
+        )
+    
+    # Отправляем письмо с подтверждением подписки через Celery
+    send_subscription_confirmation_email.delay(subscription.id)
+    
+    messages.success(request, f'Вы успешно подписались на событие "{event.name}". На ваш email отправлено подтверждение.')
     return redirect('events:detail', pk=pk)
 
 

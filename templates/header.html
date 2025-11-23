@@ -19,6 +19,7 @@
     
     <li><a href="{% url 'users:profile' %}">Профиль</a></li>
     {% if user.is_staff or user.is_superuser %}
+    <li><a href="{% url 'rentals:staff_rental_list' %}">Управление бронями</a></li>
     <li><a href="{% url 'users:register_user' %}">Создать пользователя</a></li>
     {% endif %}
     </ul>

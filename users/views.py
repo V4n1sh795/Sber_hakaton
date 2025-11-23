@@ -52,17 +52,35 @@ def profile_view(request):
     """
     from django.utils import timezone
     
-    # Активные выдачи (книги не возвращены)
+    # Ожидающие подтверждения брони
+    pending_rentals = Rental.objects.filter(
+        user=request.user,
+        status='pending'
+    ).select_related('book', 'book__book').order_by('-created_at')
+    
+    # Подтвержденные брони (ожидают выдачи)
+    confirmed_rentals = Rental.objects.filter(
+        user=request.user,
+        status='confirmed'
+    ).select_related('book', 'book__book').order_by('-confirmed_at')
+    
+    # Активные выдачи (книги выданы, но не возвращены)
     active_rentals = Rental.objects.filter(
         user=request.user,
-        return_date__isnull=True
-    ).select_related('book')
+        status='issued'
+    ).select_related('book', 'book__book')
     
     # История выдач (книги возвращены)
     history_rentals = Rental.objects.filter(
         user=request.user,
-        return_date__isnull=False
-    ).select_related('book').order_by('-return_date')[:10]
+        status='returned'
+    ).select_related('book', 'book__book').order_by('-return_date')[:10]
+    
+    # Отмененные брони
+    cancelled_rentals = Rental.objects.filter(
+        user=request.user,
+        status='cancelled'
+    ).select_related('book', 'book__book').order_by('-created_at')[:5]
     
     # Уведомления о просроченных книгах
     notifications = []
@@ -71,12 +89,15 @@ def profile_view(request):
         if rental.borrow_date:
             days_passed = (today - rental.borrow_date).days
             if days_passed > 30:  # Книга должна быть возвращена через 30 дней
-                notifications.append(f"{rental.book.title} — просрочено")
+                notifications.append(f"{rental.book.book.title} — просрочено")
     
     context = {
         'user': request.user,
+        'pending_rentals': pending_rentals,
+        'confirmed_rentals': confirmed_rentals,
         'active_rentals': active_rentals,
         'history_rentals': history_rentals,
+        'cancelled_rentals': cancelled_rentals,
         'notifications': notifications,
     }
     
@@ -97,6 +118,8 @@ def logout_view(request):
     
     # Если GET - показываем страницу подтверждения
     return render(request, 'users/logout_confirm.html')
+
+
 @login_required
 def recomendations(request):
     if request.method == 'GET':

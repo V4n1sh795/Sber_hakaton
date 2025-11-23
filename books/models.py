@@ -27,6 +27,13 @@ class Book(models.Model):
                             verbose_name='Превью обложки',
                             help_text='Генерируемая превью книги'
     )
+    
+    class Meta:
+        verbose_name = 'Книга'
+        verbose_name_plural = 'Книги'
+    
+    def __str__(self):
+        return f"{self.title} - {self.author}"
 
     def create_thumbnail(self):
         """Создает thumbnail из основного изображения"""
@@ -81,3 +88,10 @@ class BookCopy(models.Model):
                         )
     registered_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Экземпляр книги'
+        verbose_name_plural = 'Экземпляры книг'
+    
+    def __str__(self):
+        return f"{self.book.title} (ID: {self.id}, зарегистрирован: {self.registered_at.strftime('%d.%m.%Y')})"

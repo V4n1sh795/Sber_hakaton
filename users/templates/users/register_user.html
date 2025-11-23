@@ -125,19 +125,6 @@
                             </div>
                         </div>
                         
-                        <!-- Чекбокс сотрудника -->
-                        <div class="mb-4">
-                            <div class="form-check">
-                                {{ form.is_staff }}
-                                <label class="form-check-label" for="{{ form.is_staff.id_for_label }}">
-                                    {{ form.is_staff.label }}
-                                </label>
-                                {% if form.is_staff.help_text %}
-                                    <div class="form-text">{{ form.is_staff.help_text }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
                         <!-- Кнопки -->
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{% url 'users:profile' %}" class="btn btn-secondary">

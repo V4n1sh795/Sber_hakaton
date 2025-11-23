@@ -60,23 +60,25 @@ class CreateRentalForm(forms.ModelForm):
         from datetime import date
         
         if self.book_id:
-            # Ищем доступные экземпляры конкретной книги
-            available_copies = BookCopy.objects.filter(
-                book_id=self.book_id
-            ).filter(
-                Q(rental__isnull=True) |  # Никогда не арендовались
-                Q(rental__return_date__isnull=False) |  # Уже возвращены
-                Q(rental__borrow_date__gt=date.today())  # Аренда в будущем
-            ).distinct()
+            # Получаем все экземпляры конкретной книги
+            all_copies = BookCopy.objects.filter(book_id=self.book_id)
         else:
-            # Ищем любые доступные экземпляры
-            available_copies = BookCopy.objects.filter(
-                Q(rental__isnull=True) |
-                Q(rental__return_date__isnull=False) |
-                Q(rental__borrow_date__gt=date.today())
-            ).distinct()
+            # Получаем все экземпляры
+            all_copies = BookCopy.objects.all()
         
-        return list(available_copies)
+        # Фильтруем только те, у которых НЕТ активной аренды
+        # Активная аренда = return_date is NULL
+        available_copies = []
+        for copy in all_copies:
+            has_active_rental = Rental.objects.filter(
+                book=copy,
+                return_date__isnull=True  # Книга не возвращена
+            ).exists()
+            
+            if not has_active_rental:
+                available_copies.append(copy)
+        
+        return available_copies
     
     def clean(self):
         cleaned_data = super().clean()
