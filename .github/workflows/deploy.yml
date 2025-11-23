@@ -30,6 +30,8 @@ jobs:
             --exclude='*.env' \
             --exclude='media/' \
             --exclude='staticfiles/' \
+            --exclude='__pycache__/' \
+            --exclude='*/__pycache__/' \
             ./ "$PROJECT_ROOT/"
 
       - name: Install/Update Python dependencies
