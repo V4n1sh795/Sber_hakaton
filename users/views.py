@@ -2,11 +2,17 @@
 # myapp/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from rentals.models import Rental
 from books.models import Book, BookCopy
+from .forms import StaffUserCreationForm
 import users.rec as rec
+
+
+def is_staff_or_admin(user):
+    """Проверка, что пользователь - сотрудник или администратор"""
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 
 def autorization_page(request):
@@ -46,17 +52,35 @@ def profile_view(request):
     """
     from django.utils import timezone
     
-    # Активные выдачи (книги не возвращены)
+    # Ожидающие подтверждения брони
+    pending_rentals = Rental.objects.filter(
+        user=request.user,
+        status='pending'
+    ).select_related('book', 'book__book').order_by('-created_at')
+    
+    # Подтвержденные брони (ожидают выдачи)
+    confirmed_rentals = Rental.objects.filter(
+        user=request.user,
+        status='confirmed'
+    ).select_related('book', 'book__book').order_by('-confirmed_at')
+    
+    # Активные выдачи (книги выданы, но не возвращены)
     active_rentals = Rental.objects.filter(
         user=request.user,
-        return_date__isnull=True
-    ).select_related('book')
+        status='issued'
+    ).select_related('book', 'book__book')
     
     # История выдач (книги возвращены)
     history_rentals = Rental.objects.filter(
         user=request.user,
-        return_date__isnull=False
-    ).select_related('book').order_by('-return_date')[:10]
+        status='returned'
+    ).select_related('book', 'book__book').order_by('-return_date')[:10]
+    
+    # Отмененные брони
+    cancelled_rentals = Rental.objects.filter(
+        user=request.user,
+        status='cancelled'
+    ).select_related('book', 'book__book').order_by('-created_at')[:5]
     
     # Уведомления о просроченных книгах
     notifications = []
@@ -65,12 +89,15 @@ def profile_view(request):
         if rental.borrow_date:
             days_passed = (today - rental.borrow_date).days
             if days_passed > 30:  # Книга должна быть возвращена через 30 дней
-                notifications.append(f"{rental.book.title} — просрочено")
+                notifications.append(f"{rental.book.book.title} — просрочено")
     
     context = {
         'user': request.user,
+        'pending_rentals': pending_rentals,
+        'confirmed_rentals': confirmed_rentals,
         'active_rentals': active_rentals,
         'history_rentals': history_rentals,
+        'cancelled_rentals': cancelled_rentals,
         'notifications': notifications,
     }
     
@@ -91,6 +118,8 @@ def logout_view(request):
     
     # Если GET - показываем страницу подтверждения
     return render(request, 'users/logout_confirm.html')
+
+
 @login_required
 def recomendations(request):
     if request.method == 'GET':
@@ -109,4 +138,29 @@ def recomendations(request):
         res = [book for sublist in res for book in sublist]
         print(res)
         return render(request, 'users/recomedation.html', {'books': res})
+
+
+@user_passes_test(is_staff_or_admin, login_url='/users/login/')
+def register_user_view(request):
+    """
+    Регистрация нового пользователя сотрудником или администратором.
+    Доступно только для staff и superuser.
+    """
+    if request.method == 'POST':
+        form = StaffUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            password = form.get_generated_password()
+            messages.success(
+                request,
+                f'Пользователь {user.full_name} ({user.email}) успешно создан. '
+                f'Пароль: {password}'
+            )
+            return redirect('users:register_user')  # Можно изменить на другую страницу
+        else:
+            messages.error(request, 'Исправьте ошибки в форме.')
+    else:
+        form = StaffUserCreationForm()
+    
+    return render(request, 'users/register_user.html', {'form': form})
     

@@ -60,21 +60,19 @@ class CreateRentalForm(forms.ModelForm):
         from datetime import date
         
         if self.book_id:
-            # Ищем доступные экземпляры конкретной книги
-            available_copies = BookCopy.objects.filter(
-                book_id=self.book_id
-            ).filter(
-                Q(rental__isnull=True) |  # Никогда не арендовались
-                Q(rental__return_date__isnull=False) |  # Уже возвращены
-                Q(rental__borrow_date__gt=date.today())  # Аренда в будущем
-            ).distinct()
+            # Получаем все экземпляры конкретной книги
+            all_copies = BookCopy.objects.filter(book_id=self.book_id)
         else:
-            # Ищем любые доступные экземпляры
-            available_copies = BookCopy.objects.filter(
-                Q(rental__isnull=True) |
-                Q(rental__return_date__isnull=False) |
-                Q(rental__borrow_date__gt=date.today())
-            ).distinct()
+            # Получаем все экземпляры
+            all_copies = BookCopy.objects.all()
+        
+        # Находим занятые экземпляры (есть активная бронь со статусом pending, confirmed или issued)
+        occupied_copy_ids = Rental.objects.filter(
+            status__in=['pending', 'confirmed', 'issued']
+        ).values_list('book_id', flat=True)
+        
+        # Доступные = все минус занятые
+        available_copies = all_copies.exclude(id__in=occupied_copy_ids)
         
         return list(available_copies)
     
@@ -87,11 +85,10 @@ class CreateRentalForm(forms.ModelForm):
             raise forms.ValidationError("Нет доступных экземпляров для бронирования")
         
         if book_copy and borrow_date:
-            # Проверяем, не арендован ли экземпляр уже на эту дату
+            # Проверяем, не арендован ли экземпляр уже
             existing_rental = Rental.objects.filter(
                 book=book_copy,
-                return_date__isnull=True,  # Не возвращена
-                borrow_date__lte=borrow_date  # Дата выдачи уже прошла
+                status__in=['pending', 'confirmed', 'issued']  # Активные брони
             ).exists()
             
             if existing_rental:

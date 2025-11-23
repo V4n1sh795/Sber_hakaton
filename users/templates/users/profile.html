@@ -43,21 +43,81 @@
 
     <!-- Центральная колонка - книги -->
     <div class="col-lg-6 col-md-8">
+      <!-- Ожидающие подтверждения брони -->
+      <div class="section-card mb-4">
+        <h5 class="section-title">⏳ Ожидают подтверждения</h5>
+        <div class="books-slider">
+          <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
+          <div class="books-outer">
+            <div class="books-container">
+              {% for rental in pending_rentals %}
+              <div class="book-item text-center">
+                <img src="{{ rental.book.book.cover.url }}" alt="Книга" class="book-img mb-2" style="max-height: 150px; object-fit: cover;">
+                <div class="book-info">
+                  <p class="book-title">{{ rental.book.book.title }}</p>
+                  <p class="book-author">{{ rental.book.book.author }}</p>
+                  <p class="book-date">Создано: <span class="text-warning">{{ rental.created_at|date:"d.m.Y H:i" }}</span></p>
+                  <span class="badge bg-warning text-dark">Ожидает подтверждения</span>
+                </div>
+              </div>
+              {% empty %}
+              <div class="book-item text-center">
+                <p>Нет ожидающих броней</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <button class="slider-btn next"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Подтвержденные брони -->
+      <div class="section-card mb-4">
+        <h5 class="section-title">✅ Подтверждено - ожидает выдачи</h5>
+        <div class="books-slider">
+          <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
+          <div class="books-outer">
+            <div class="books-container">
+              {% for rental in confirmed_rentals %}
+              <div class="book-item text-center">
+                <img src="{{ rental.book.book.cover.url }}" alt="Книга" class="book-img mb-2" style="max-height: 150px; object-fit: cover;">
+                <div class="book-info">
+                  <p class="book-title">{{ rental.book.book.title }}</p>
+                  <p class="book-author">{{ rental.book.book.author }}</p>
+                  <p class="book-date">Подтверждено: <span class="text-success">{{ rental.confirmed_at|date:"d.m.Y H:i" }}</span></p>
+                  <p class="book-date">Запланировано: <span class="text-primary">{{ rental.borrow_date|date:"d.m.Y" }}</span></p>
+                  <span class="badge bg-success">Подтверждено</span>
+                </div>
+              </div>
+              {% empty %}
+              <div class="book-item text-center">
+                <p>Нет подтвержденных броней</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <button class="slider-btn next"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+
       <!-- Активные выдачи -->
       <div class="section-card mb-4">
-        <h5 class="section-title">Активные выдачи</h5>
+        <h5 class="section-title">📚 Активные выдачи</h5>
         <div class="books-slider">
           <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
           <div class="books-outer">
             <div class="books-container">
               {% for rental in active_rentals %}
               <div class="book-item text-center">
-                <img src="{% static 'img/profile/book-icon.png' %}" alt="Книга" class="book-img mb-2">
+                <img src="{{ rental.book.book.cover.url }}" alt="Книга" class="book-img mb-2" style="max-height: 150px; object-fit: cover;">
                 <div class="book-info">
-                  <p class="book-title">{{ rental.book.title }}</p>
-                  <p class="book-author">{{ rental.book.author }}</p>
+                  <p class="book-title">{{ rental.book.book.title }}</p>
+                  <p class="book-author">{{ rental.book.book.author }}</p>
                   <p class="book-date">Взяли: <span class="text-primary">{{ rental.borrow_date|date:"d.m.Y" }}</span></p>
-                  <p class="book-return">Вернуть: <span class="text-primary">{{ rental.return_date|date:"d.m.Y" }}</span></p>
+                  {% if rental.expected_return_date %}
+                  <p class="book-return">Вернуть до: <span class="text-primary">{{ rental.expected_return_date|date:"d.m.Y" }}</span></p>
+                  {% endif %}
+                  <span class="badge bg-info text-dark">На руках</span>
                 </div>
               </div>
               {% empty %}
@@ -72,19 +132,20 @@
       </div>
 
       <!-- История выдач -->
-      <div class="section-card">
-        <h5 class="section-title">История выдач</h5>
+      <div class="section-card mb-4">
+        <h5 class="section-title">📖 История выдач</h5>
         <div class="books-slider">
           <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
           <div class="books-outer">
             <div class="books-container">
               {% for rental in history_rentals %}
               <div class="book-item text-center">
-                <img src="{% static 'img/profile/book-icon.png' %}" alt="Книга" class="book-img mb-2">
+                <img src="{{ rental.book.book.cover.url }}" alt="Книга" class="book-img mb-2" style="max-height: 150px; object-fit: cover;">
                 <div class="book-info">
-                  <p class="book-title">{{ rental.book.title }}</p>
-                  <p class="book-author">{{ rental.book.author }}</p>
-                  <p class="book-date">Вернули: <span class="text-primary">{{ rental.return_date|date:"d.m.Y" }}</span></p>
+                  <p class="book-title">{{ rental.book.book.title }}</p>
+                  <p class="book-author">{{ rental.book.book.author }}</p>
+                  <p class="book-date">Вернули: <span class="text-success">{{ rental.return_date|date:"d.m.Y" }}</span></p>
+                  <span class="badge bg-secondary">Возвращено</span>
                 </div>
               </div>
               {% empty %}
@@ -97,6 +158,32 @@
           <button class="slider-btn next"><i class="bi bi-chevron-right"></i></button>
         </div>
       </div>
+
+      <!-- Отмененные брони -->
+      {% if cancelled_rentals %}
+      <div class="section-card mb-4">
+        <h5 class="section-title">❌ Отмененные брони</h5>
+        <div class="books-slider">
+          <button class="slider-btn prev"><i class="bi bi-chevron-left"></i></button>
+          <div class="books-outer">
+            <div class="books-container">
+              {% for rental in cancelled_rentals %}
+              <div class="book-item text-center">
+                <img src="{{ rental.book.book.cover.url }}" alt="Книга" class="book-img mb-2" style="max-height: 150px; object-fit: cover;">
+                <div class="book-info">
+                  <p class="book-title">{{ rental.book.book.title }}</p>
+                  <p class="book-author">{{ rental.book.book.author }}</p>
+                  <p class="book-date">Создано: <span class="text-muted">{{ rental.created_at|date:"d.m.Y" }}</span></p>
+                  <span class="badge bg-danger">Отменено</span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <button class="slider-btn next"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+      {% endif %}
     </div>
 
     <!-- Правая колонка - уведомления и кнопки -->

@@ -1,16 +1,27 @@
-from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.shortcuts import redirect
 
 from books.models import Book, BookCopy
 from books.forms import CreateBookForm, BookFilterListForm
 from books.forms import CreateBookCopyForm, UpdateBookCopyForm
 
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Миксин для проверки, что пользователь является стафом"""
+    def test_func(self):
+        return self.request.user.is_authenticated and (self.request.user.is_staff or self.request.user.is_superuser)
+    
+    def handle_no_permission(self):
+        messages.error(self.request, 'У вас нет доступа к этой странице. Требуются права сотрудника.')
+        return redirect('books:BookPagedView')
+
+
 # Запросы для книг
 
-class CreateBookView(CreateView):
+class CreateBookView(StaffRequiredMixin, CreateView):
     model = Book
     form_class = CreateBookForm
     template_name = "books/create_form.html"
@@ -18,7 +29,6 @@ class CreateBookView(CreateView):
 
     def form_valid(self, form):
         # TODO: file size validation
-        # TODO: create thumbnail
         response = super().form_valid(form)
         messages.success(self.request, f'Книга "{self.object.title}" успешно создана!')
         return response
@@ -86,7 +96,7 @@ class BookPagedView(ListView):
 
 # Запросы для экземпляров книг
 
-class CreateBookCopyView(CreateView):
+class CreateBookCopyView(StaffRequiredMixin, CreateView):
     model = BookCopy
     form_class = CreateBookCopyForm
     template_name = "bookcopies/create_form.html"
