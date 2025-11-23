@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация пользователя | Библиотека{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">👤 Регистрация нового пользователя</h4>
+                    <small>Только для сотрудников библиотеки и администраторов</small>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Сообщения -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="alert alert-info">
+                        <strong>ℹ️ Важно:</strong> После создания пользователя обязательно сообщите ему email и пароль для входа в систему.
+                    </div>
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Фамилия -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.lastname.id_for_label }}" class="form-label">
+                                    {{ form.lastname.label }} *
+                                </label>
+                                {{ form.lastname }}
+                                {% if form.lastname.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.lastname.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Имя -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    {{ form.name.label }} *
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.name.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Отчество -->
+                        <div class="mb-3">
+                            <label for="{{ form.patronymic.id_for_label }}" class="form-label">
+                                {{ form.patronymic.label }}
+                            </label>
+                            {{ form.patronymic }}
+                            {% if form.patronymic.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.patronymic.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                {{ form.email.label }} *
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Email будет использоваться для входа в систему</div>
+                        </div>
+                        
+                        <!-- Телефон -->
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                {{ form.phone.label }}
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.phone.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Сгенерированный пароль -->
+                        <div class="mb-3">
+                            <label for="{{ form.generated_password.id_for_label }}" class="form-label">
+                                {{ form.generated_password.label }} *
+                            </label>
+                            <div class="input-group">
+                                {{ form.generated_password }}
+                                <button class="btn btn-outline-secondary" type="button" id="copyPasswordBtn" title="Скопировать пароль">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            {% if form.generated_password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.generated_password.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.generated_password.help_text %}
+                                <div class="form-text">{{ form.generated_password.help_text }}</div>
+                            {% endif %}
+                            <div class="alert alert-warning mt-2 mb-0">
+                                <small><strong>⚠️ Внимание:</strong> Обязательно скопируйте или запишите этот пароль! Он понадобится для передачи пользователю.</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Чекбокс сотрудника -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.is_staff }}
+                                <label class="form-check-label" for="{{ form.is_staff.id_for_label }}">
+                                    {{ form.is_staff.label }}
+                                </label>
+                                {% if form.is_staff.help_text %}
+                                    <div class="form-text">{{ form.is_staff.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопки -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'users:profile' %}" class="btn btn-secondary">
+                                Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Создать пользователя
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Инструкция -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">📋 Инструкция</h5>
+                    <ol class="mb-0">
+                        <li>Заполните все обязательные поля (отмечены звездочкой *)</li>
+                        <li>Пароль генерируется автоматически - скопируйте его с помощью кнопки</li>
+                        <li>Отметьте "Сотрудник библиотеки", если создаете аккаунт для персонала</li>
+                        <li>После создания аккаунта обязательно сообщите пользователю его email и пароль</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-check-input {
+        border-radius: 0.5rem;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .card {
+        border-radius: 0.75rem;
+    }
+    
+    .alert-info {
+        border-left: 4px solid #0dcaf0;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #ffc107;
+    }
+    
+    #copyPasswordBtn {
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyBtn = document.getElementById('copyPasswordBtn');
+        const passwordField = document.getElementById('{{ form.generated_password.id_for_label }}');
+        
+        if (copyBtn && passwordField) {
+            copyBtn.addEventListener('click', function() {
+                passwordField.select();
+                passwordField.setSelectionRange(0, 99999); // Для мобильных устройств
+                
+                navigator.clipboard.writeText(passwordField.value).then(function() {
+                    // Меняем иконку на галочку
+                    const originalHTML = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>';
+                    copyBtn.classList.remove('btn-outline-secondary');
+                    copyBtn.classList.add('btn-success');
+                    
+                    // Возвращаем оригинальную иконку через 2 секунды
+                    setTimeout(function() {
+                        copyBtn.innerHTML = originalHTML;
+                        copyBtn.classList.remove('btn-success');
+                        copyBtn.classList.add('btn-outline-secondary');
+                    }, 2000);
+                }).catch(function(err) {
+                    alert('Не удалось скопировать пароль: ' + err);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

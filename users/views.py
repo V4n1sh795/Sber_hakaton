@@ -2,11 +2,17 @@
 # myapp/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from rentals.models import Rental
 from books.models import Book, BookCopy
+from .forms import StaffUserCreationForm
 import users.rec as rec
+
+
+def is_staff_or_admin(user):
+    """Проверка, что пользователь - сотрудник или администратор"""
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
 
 
 def autorization_page(request):
@@ -109,4 +115,29 @@ def recomendations(request):
         res = [book for sublist in res for book in sublist]
         print(res)
         return render(request, 'users/recomedation.html', {'books': res})
+
+
+@user_passes_test(is_staff_or_admin, login_url='/users/login/')
+def register_user_view(request):
+    """
+    Регистрация нового пользователя сотрудником или администратором.
+    Доступно только для staff и superuser.
+    """
+    if request.method == 'POST':
+        form = StaffUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            password = form.get_generated_password()
+            messages.success(
+                request,
+                f'Пользователь {user.full_name} ({user.email}) успешно создан. '
+                f'Пароль: {password}'
+            )
+            return redirect('users:register_user')  # Можно изменить на другую страницу
+        else:
+            messages.error(request, 'Исправьте ошибки в форме.')
+    else:
+        form = StaffUserCreationForm()
+    
+    return render(request, 'users/register_user.html', {'form': form})
     

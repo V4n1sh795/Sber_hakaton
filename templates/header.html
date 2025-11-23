@@ -16,6 +16,10 @@
     <li><a href="{% url 'home' %}">Главная</a></li>
     <li><a href="{% url 'books:BookPagedView' %}">Книжный каталог</a></li>
     <li><a href="{% url 'events:list' %}">Мероприятия</a></li>
+    
     <li><a href="{% url 'users:profile' %}">Профиль</a></li>
+    {% if user.is_staff or user.is_superuser %}
+    <li><a href="{% url 'users:register_user' %}">Создать пользователя</a></li>
+    {% endif %}
     </ul>
 </div>
