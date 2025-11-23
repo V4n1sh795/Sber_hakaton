@@ -66,19 +66,15 @@ class CreateRentalForm(forms.ModelForm):
             # Получаем все экземпляры
             all_copies = BookCopy.objects.all()
         
-        # Фильтруем только те, у которых НЕТ активной аренды
-        # Активная аренда = return_date is NULL
-        available_copies = []
-        for copy in all_copies:
-            has_active_rental = Rental.objects.filter(
-                book=copy,
-                return_date__isnull=True  # Книга не возвращена
-            ).exists()
-            
-            if not has_active_rental:
-                available_copies.append(copy)
+        # Находим занятые экземпляры (есть активная бронь со статусом pending, confirmed или issued)
+        occupied_copy_ids = Rental.objects.filter(
+            status__in=['pending', 'confirmed', 'issued']
+        ).values_list('book_id', flat=True)
         
-        return available_copies
+        # Доступные = все минус занятые
+        available_copies = all_copies.exclude(id__in=occupied_copy_ids)
+        
+        return list(available_copies)
     
     def clean(self):
         cleaned_data = super().clean()
@@ -89,11 +85,10 @@ class CreateRentalForm(forms.ModelForm):
             raise forms.ValidationError("Нет доступных экземпляров для бронирования")
         
         if book_copy and borrow_date:
-            # Проверяем, не арендован ли экземпляр уже на эту дату
+            # Проверяем, не арендован ли экземпляр уже
             existing_rental = Rental.objects.filter(
                 book=book_copy,
-                return_date__isnull=True,  # Не возвращена
-                borrow_date__lte=borrow_date  # Дата выдачи уже прошла
+                status__in=['pending', 'confirmed', 'issued']  # Активные брони
             ).exists()
             
             if existing_rental:

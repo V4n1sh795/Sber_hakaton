@@ -4,10 +4,10 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.http import JsonResponse
 from rentals.forms import CreateRentalForm
 from rentals.models import Rental
 from books.models import Book, BookCopy
+from django.db.models import Count, Q
 
 
 class StaffRequiredMixin(UserPassesTestMixin):
@@ -80,9 +80,7 @@ class RentalListStaffView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     context_object_name = 'rentals'
     paginate_by = 20
     
-    def get_queryset(self):
-        from django.db.models import Count, Q
-        
+    def get_queryset(self):        
         queryset = Rental.objects.select_related('book__book', 'user').annotate(
             user_rental_count=Count(
                 'user__rental',
@@ -107,7 +105,16 @@ class RentalListStaffView(LoginRequiredMixin, StaffRequiredMixin, ListView):
                 user__lastname__icontains=search
             )
         
-        return queryset
+        # Разделяем queryset на две части
+        pending_rentals = queryset.filter(status='pending').order_by('created_at')
+        other_rentals = queryset.exclude(status='pending').order_by('-created_at')
+        
+        # Объединяем: сначала pending (старые первыми), потом остальные (новые первыми)
+        # Используем union для объединения, но это может не работать с пагинацией
+        # Поэтому используем list для объединения
+        combined = list(pending_rentals) + list(other_rentals)
+        
+        return combined
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

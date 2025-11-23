@@ -99,7 +99,7 @@
                                 <i class="fas fa-copy"></i>
                                 Выбранный экземпляр
                             </h6>
-                            {% if form.book.value %}
+                            {% if available_copies_count > 0 %}
                                 <div class="alert alert-success">
                                     <i class="fas fa-check-circle"></i>
                                     <strong>Система автоматически выбрала доступный экземпляр</strong>
@@ -195,7 +195,7 @@
 
                         <!-- Кнопки -->
                         <div class="d-flex gap-2 mt-4">
-                            {% if form.book.value %}
+                            {% if available_copies_count > 0 %}
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-check-circle"></i>
                                 Подтвердить бронирование
