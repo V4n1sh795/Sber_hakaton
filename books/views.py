@@ -29,7 +29,6 @@ class CreateBookView(StaffRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # TODO: file size validation
-        # TODO: create thumbnail
         response = super().form_valid(form)
         messages.success(self.request, f'Книга "{self.object.title}" успешно создана!')
         return response

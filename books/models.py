@@ -35,6 +35,15 @@ class Book(models.Model):
     def __str__(self):
         return f"{self.title} - {self.author}"
 
+    def save(self, *args, **kwargs):
+        """Переопределяем save для автоматического создания thumbnail"""
+        # Сначала сохраняем объект, чтобы файл был доступен
+        super().save(*args, **kwargs)
+        
+        # Если есть обложка, но нет thumbnail - создаем
+        if self.cover_photo and not self.cover_thumbnail:
+            self.create_thumbnail()
+
     def create_thumbnail(self):
         """Создает thumbnail из основного изображения"""
         try:
