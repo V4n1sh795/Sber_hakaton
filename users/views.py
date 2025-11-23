@@ -5,7 +5,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from rentals.models import Rental
-from books.models import Book
+from books.models import Book, BookCopy
 import users.rec as rec
 
 
@@ -67,11 +67,12 @@ def recomendations(request):
         user = request.user  # или любой объект пользователя
 
         # Получаем все записи аренды пользователя
-        rentals = user.rental_set.all()
+        # rentals = user.rental_set.all()
         # КОД НИЖЕ УДАЛИТЬ НА ПРОДЕ
         # ВОТ ДО СЮДА
         # Получаем только книги (без дубликатов)
-        books = Book.objects.filter(rental__user=user).distinct()
+        books = Book.objects.filter(bookcopy__rental__user=user).distinct()
+        print(books)
         res = []
         for book in books:
             res.append(rec.recommend(book.title))
