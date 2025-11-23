@@ -102,7 +102,7 @@ def recomendations(request):
         # ВОТ ДО СЮДА
         # Получаем только книги (без дубликатов)
         books = Book.objects.filter(bookcopy__rental__user=user).distinct()
-        print(books)
+        print(books) # [Book, book, Book]
         res = []
         for book in books:
             res.append(rec.recommend(book.title))
