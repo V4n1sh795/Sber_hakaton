@@ -1,24 +1,11 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from books.models import Book
-# Данные книг с жанрами и авторами
 
-
-books= list(
-    Book.objects.values('title', 'author', 'genre')
-)
 # Объединяем жанр и автора для создания признаков
 def combine_features(book):
     return f"{book['genre']} {book['author']}"
 
-book_features = [combine_features(book) for book in books]
-
-# Векторизация признаков (Bag of Words)
-vectorizer = CountVectorizer()
-feature_matrix = vectorizer.fit_transform(book_features)
-
-# Вычисляем косинусное сходство между книгами
-similarity_matrix = cosine_similarity(feature_matrix)
 def get_books_by_titles(titles):
     """
     Генератор: принимает список названий книг,
@@ -32,11 +19,27 @@ def get_books_by_titles(titles):
         book = Book.objects.filter(title=title).first()
         if book:
             yield book
+
 # Функция для получение рекомендаций по названию книги
 def recommend(book_title):
+    # Получаем данные книг из базы при каждом вызове
+    books = list(Book.objects.values('title', 'author', 'genre'))
+    
+    if not books:
+        return []
+    
+    book_features = [combine_features(book) for book in books]
+    
+    # Векторизация признаков (Bag of Words)
+    vectorizer = CountVectorizer()
+    feature_matrix = vectorizer.fit_transform(book_features)
+    
+    # Вычисляем косинусное сходство между книгами
+    similarity_matrix = cosine_similarity(feature_matrix)
+    
     book_index = next((i for i, book in enumerate(books) if book["title"] == book_title), None)
     if book_index is None:
-        return "Книга не найдена"
+        return []
     
     sim_scores = list(enumerate(similarity_matrix[book_index]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
