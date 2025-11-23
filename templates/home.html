@@ -1,42 +1,38 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Главная - Библиотека{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <div class="text-center">
-            <h1>Добро пожаловать в библиотеку</h1>
-            <p class="lead mt-4">Система управления библиотекой</p>
-
-            <div class="row mt-5">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">События</h5>
-                            <p class="card-text">Посмотрите предстоящие события и мероприятия библиотеки</p>
-                            <a href="{% url 'events:list' %}" class="btn btn-primary">Перейти</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Книги</h5>
-                            <p class="card-text">Каталог доступных книг в библиотеке</p>
-                            <a href="#" class="btn btn-secondary">Скоро</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Аренда</h5>
-                            <p class="card-text">Управление арендой книг</p>
-                            <a href="#" class="btn btn-secondary">Скоро</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="main-container">
+    <!-- carusel -->
+    {% if slides %}
+    <div id="carouselExampleIndicators" class="carousel slide animate__animated animate__zoomIn" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        {% for slide in slides %}
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
+        {% endfor %}
+      </div>
+      <div class="carousel-inner">
+        {% for slide in slides %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <img src="{{ slide.image.url }}" class="d-block w-100" alt="{{ slide.title }}">
+          <div class="carousel-caption d-block">
+            <h5>{{ slide.title }}</h5>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
+    {% endif %}
+  </div>
 {% endblock %}

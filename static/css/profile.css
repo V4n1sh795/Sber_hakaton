@@ -1,0 +1,347 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: black;
+  background-color: #f8f9fa;
+}
+
+/* === Контейнер для выравнивания === */
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 30px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    padding: 0 40px;
+  }
+}
+
+/* === ШАПКА === */
+header {
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  align-items: center; /* ← Центрирует по вертикали */
+}
+
+.menu-toggle {
+  width: 40px;
+  cursor: pointer;
+  /* margin-top убран — не нужен при align-items: center */
+}
+
+.logo {
+  max-width: 213px;
+  height: auto;
+}
+
+.block {
+  background: #00173B;
+  padding: 24px 0;
+}
+
+/* === Mobile Menu === */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -420px;
+  width: 351px;
+  height: 100vh;
+  background-color: #404040;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 30px 30px 20px;
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  left: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.close-btn {
+  font-size: 3.5rem;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mobile-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-menu li {
+  margin-bottom: 20px;
+}
+
+.mobile-menu a {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu a:hover {
+  color: #3498db;
+  padding-left: 15px;
+}
+
+/* === Основной контент === */
+.footer {
+  background: #00173B;
+  padding: 20px 0;
+}
+
+.footer .information {
+  text-align: center;
+}
+
+.footer .information p {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.footer .information img {
+  max-width: 30px;
+  height: auto;
+}
+
+/* Карточки */
+.profile-card,
+.status-card,
+.section-card,
+.notifications-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card {
+  padding: 15px;
+}
+
+.status-card,
+.notifications-card {
+  padding: 15px;
+}
+
+.section-card {
+  padding: 20px;
+}
+
+.profile-info p {
+  margin: 5px 0;
+  font-weight: 600;
+}
+
+.profile-actions button {
+  font-size: 14px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.status-active {
+  color: #00c853;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.section-title,
+.notifications-title {
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* === Слайдер книг === */
+.books-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* НОВЫЙ ВИД КНОПОК */
+.slider-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: #001f4d;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.slider-btn:hover {
+  background: #001f4d;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.slider-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.books-outer {
+  flex: 1;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 8px 0;
+}
+
+.books-outer::-webkit-scrollbar {
+  display: none;
+}
+
+/* ← Центрируем карточки по горизонтали */
+.books-container {
+  display: flex;
+  gap: 16px;
+  padding: 0 8px;
+  min-width: fit-content;
+  justify-content: center; /* ← ключевое изменение */
+}
+
+.book-item {
+  width: 150px;
+  flex-shrink: 0;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.book-img {
+  width: 80px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.book-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.book-author {
+  font-size: 13px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.book-date,
+.book-return {
+  font-size: 12px;
+  color: #666;
+  margin: 3px 0;
+}
+
+.book-date span,
+.book-return span {
+  font-weight: 600;
+}
+
+/* Уведомления и кнопки */
+.notification-item {
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.btn-secondary {
+  background-color: #e0e0e0;
+  border: none;
+  color: #333;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:last-child {
+  margin-bottom: 0;
+}
+
+.btn-secondary:hover {
+  background-color: #d0d0d0;
+  color: #001f4d;
+}
+
+/* Адаптивность */
+@media (max-width: 991.98px) {
+  .header-top {
+    padding: 10px 0;
+  }
+
+  .col-lg-3 {
+    display: none;
+  }
+
+  .book-item {
+    width: 130px;
+  }
+}

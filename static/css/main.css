@@ -1,0 +1,406 @@
+body {
+    font-family: 'Inter';
+    font-weight: 700;
+    color: black;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    height: auto;
+    min-height: 150px;
+    background-color: #fff;
+    border-bottom: 40px solid #001f4d;
+    padding: 10px 20px;
+    font-size: 24px;
+}
+
+/* === Шапка === */
+header {
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  align-items: center;
+}
+
+.menu-toggle {
+  width: 40px;
+  cursor: pointer;
+}
+
+.logo {
+  max-width: 213px;
+  height: auto;
+}
+
+.block {
+  background: #00173B;
+  padding: 24px 0;
+}
+
+/* === Mobile Menu === */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -420px;
+  width: 351px;
+  height: 100vh;
+  background-color: #404040;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 30px 30px 20px;
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  left: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.close-btn {
+  font-size: 3.5rem;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mobile-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-menu li {
+  margin-bottom: 20px;
+}
+
+.mobile-menu a {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu a:hover {
+  color: #3498db;
+  padding-left: 15px;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.navbar-brand {
+    margin-right: 140px;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-item {
+    margin-right: 140px;
+}
+
+.nav-link {
+    color: black;
+}
+
+.nav-item:last-child {
+    margin-right: 0px;
+}
+
+/* Стили для основного контента */
+.main-container {
+    margin: 0px;
+    padding: 0;
+}
+
+.carousel {
+    margin: 0;
+    padding: 0;
+}
+
+.carousel,
+.carousel-inner,
+.carousel-item {
+    height: 100vh; /* Занимает всю высоту экрана */
+}
+
+/* 2 */
+.carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Обрезает изображение чтобы заполнить контейнер */
+    object-position: center; /* Центрирует изображение */
+}
+
+.carousel-caption {
+    text-shadow: 1px 1px 1px #000;
+    bottom: 20%;
+}
+
+/* Стили для подвала */
+.footer {
+    background-color: #001f4d;
+    color: #fff;
+    padding: 1.5rem 0;
+    text-align: center;
+}
+
+.footer h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Адаптивность для больших экранов */
+@media (max-width: 1600px) {
+    .carousel-caption {
+        bottom: 15%;
+    }
+}
+
+/* Адаптивность для планшетов в альбомной ориентации */
+@media (max-width: 1200px) {
+    .navbar-brand {
+        margin-right: 100px;
+    }
+    
+    .nav-item {
+        margin-right: 100px;
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    header {
+        padding: 10px 30px;
+        font-size: 22px;
+    }
+    
+    .navbar-brand {
+        margin-right: 80px;
+    }
+    
+    .nav-item {
+        margin-right: 80px;
+    }
+    
+    .navbar-brand img {
+        width: 90px;
+    }
+    
+    .profile-btn img {
+        width: 40px;
+    }
+    
+    .carousel-caption {
+        bottom: 10%;
+    }
+}
+
+/* Адаптивность для планшетов в портретной ориентации и больших телефонов */
+@media (max-width: 768px) {
+    header {
+        padding: 10px 20px;
+        font-size: 18px;
+        border-bottom: 30px solid #001f4d;
+    }
+    
+    .navbar-brand {
+        margin-right: 60px;
+    }
+    
+    .nav-item {
+        margin-right: 60px;
+    }
+    
+    .navbar-brand img {
+        width: 80px;
+    }
+    
+    .profile-btn img {
+        width: 35px;
+    }
+    
+    .footer h2 {
+        font-size: 1.5rem;
+    }
+    
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 70vh; /* Немного уменьшаем высоту на планшетах */
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    header {
+        padding: 8px 15px;
+        font-size: 16px;
+        border-bottom: 25px solid #001f4d;
+    }
+    
+    .navbar-brand {
+        margin-right: 40px;
+    }
+    
+    .nav-item {
+        margin-right: 40px;
+    }
+    
+    .navbar-brand img {
+        width: 70px;
+    }
+    
+    .profile-btn img {
+        width: 30px;
+    }
+    
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 60vh; /* Уменьшаем высоту на мобильных */
+    }
+    
+    .carousel-caption {
+        bottom: 5%;
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-bottom: 20px solid #001f4d;
+    }
+    
+    .navbar-brand {
+        margin-right: 20px;
+    }
+    
+    .nav-item {
+        margin-right: 20px;
+    }
+    
+    .navbar-brand img {
+        width: 60px;
+    }
+    
+    .profile-btn img {
+        width: 25px;
+    }
+    
+    .footer h2 {
+        font-size: 1.2rem;
+    }
+    
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 50vh; /* Еще меньше на маленьких экранах */
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Адаптивность для очень маленьких экранов */
+@media (max-width: 360px) {
+    header {
+        font-size: 12px;
+        border-bottom: 15px solid #001f4d;
+    }
+    
+    .navbar-brand {
+        margin-right: 15px;
+    }
+    
+    .nav-item {
+        margin-right: 15px;
+    }
+    
+    .navbar-brand img {
+        width: 50px;
+    }
+    
+    .profile-btn img {
+        width: 22px;
+    }
+    
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 45vh; /* Минимальная высота для очень маленьких экранов */
+    }
+    
+    .carousel-caption h5 {
+        font-size: 0.9rem;
+    }
+}
+
+/* Адаптивность для очень высоких экранов */
+@media (min-height: 1000px) {
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 80vh; /* Чуть меньше на очень высоких экранах */
+    }
+}
+
+/* Адаптивность для пейзажной ориентации на мобильных */
+@media (max-height: 500px) and (orientation: landscape) {
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        height: 100vh; /* Полная высота в ландшафтном режиме */
+    }
+    
+    .carousel-caption {
+        bottom: 5%;
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1rem;
+    }
+}
