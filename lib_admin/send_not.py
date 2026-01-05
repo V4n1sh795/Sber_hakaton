@@ -12,8 +12,8 @@ async def send_notification(text, recipient_email):
 # Настройки
     smtp_server = "smtp.gmail.com"  # для Gmail
     port = 587                      # порт TLS
-    sender_email = "v4n1shnerush@gmail.com"
-    password = "fltq wika ojhh ullj"  # см. ниже!
+    sender_email = ""
+    password = ""  # см. ниже!
 
 # Создание сообщения
     message = MIMEMultipart("alternative")
